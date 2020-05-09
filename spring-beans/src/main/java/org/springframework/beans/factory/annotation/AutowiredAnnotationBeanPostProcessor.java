@@ -145,6 +145,8 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 	 * Create a new AutowiredAnnotationBeanPostProcessor
 	 * for Spring's standard {@link Autowired} annotation.
 	 * <p>Also supports JSR-330's {@link javax.inject.Inject} annotation, if available.
+	 * 处理@Autowire、@Value和JSR-330的@Inject注解
+	 * 处理逻辑inject()
 	 */
 	@SuppressWarnings("unchecked")
 	public AutowiredAnnotationBeanPostProcessor() {
@@ -621,6 +623,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				Assert.state(beanFactory != null, "No BeanFactory available");
 				TypeConverter typeConverter = beanFactory.getTypeConverter();
 				try {
+					// 调用beanFactory的默认实现DefaultListableBeanFactory的resolveDependency()方法
 					value = beanFactory.resolveDependency(desc, beanName, autowiredBeanNames, typeConverter);
 				}
 				catch (BeansException ex) {
