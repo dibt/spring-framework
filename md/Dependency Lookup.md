@@ -14,7 +14,7 @@
       - getBeanProvider(ResolvableType)
    - 根据Bean 名称+类型查找
      - getBean(String,Class)
- ### 集合类型依赖查找接口 - ListableBeanFactory
+### 集合类型依赖查找接口 - ListableBeanFactory
   - 根据Bean类型查找
     - 获取同类型Bean名称列表，建议先通过名称的方式去查找
       - getBeanNamesForType(Class)
@@ -28,6 +28,16 @@
       - getBeansWithAnnotation(Class<? extends Annotation>)
     - Spring 3.0 获取指定名称+ 标注类型Bean 实例
      -- findAnnotationOnBean(String, Class<? extend Annotation>)
+### 层次类型依赖查找接口 - HierarchicalBeanFactory
+  - 双亲BeanFactory：getParentBeanFactory()
+  - 层次性查找
+    - 根据Bean 名称查找
+      - 基于 containsLocalBean方法实现
+  - 根据Bean类型查找实例列表
+    - 单一类型：BeanFactoryUtils#beanOfType
+    - 集合类型：BeanFactoryUtils#beansOfTypeIncludingAncestors
+  - 根据Java 注解查找名称列表
+    - BeanFactoryUtils#beanNamesForTypeIncludingAncestors
     
 ### 面试题
 1. 
