@@ -84,6 +84,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * other means than bean definitions.
 	 * @return the names of all beans defined in this factory,
 	 * or an empty array if none defined
+	 * Bean定义的注册完成阶段就存在了，和依赖查找(等容器启动完成之后进行的初始化操作)阶段不一样
 	 */
 	String[] getBeanDefinitionNames();
 
@@ -120,6 +121,9 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * Return the names of beans matching the given type (including subclasses),
 	 * judging from either bean definitions or the value of {@code getObjectType}
 	 * in the case of FactoryBeans.
+	 * BeanDefinition只是元信息，并不是代表Bean已经被初始化了
+	 * {@link BeanDefinition#getBeanClassName}
+	 * {@link FactoryBean#getObjectType}
 	 * <p><b>NOTE: This method introspects top-level beans only.</b> It does <i>not</i>
 	 * check nested beans which might match the specified type as well.
 	 * <p>Does consider objects created by FactoryBeans, which means that FactoryBeans
@@ -140,6 +144,10 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * the given object type (including subclasses), or an empty array if none
 	 * @see FactoryBean#getObjectType
 	 * @see BeanFactoryUtils#beanNamesForTypeIncludingAncestors(ListableBeanFactory, Class)
+	 * 返回一个给定的匹配的(包括它的子类型)类型名称 {@link Class#isAssignableFrom}
+	 * class1.isAssignableFrom(class2) 判定此 Class1 对象所表示的类或接口与指定的 Class2 参数所表示的类或接口是否相同，或是否是其超类或超接口(class2是不是class1的子类或者子接口)。
+	 * 只是在BeanDefinition里去做判断(只是比较Bean里边的定义以及FactoryBean里边的getObjectType类型的一个匹配情况)，没有涉及到Bean初始化
+	 * 和getBeansOfType()不一样
 	 */
 	String[] getBeanNamesForType(@Nullable Class<?> type);
 
@@ -203,6 +211,9 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @since 1.1.2
 	 * @see FactoryBean#getObjectType
 	 * @see BeanFactoryUtils#beansOfTypeIncludingAncestors(ListableBeanFactory, Class)
+	 * 可能会提前触发一些Bean的初始化，导致一些Bean初始化并不完全
+	 * 建议先通过名称去判断，再通过类型去判断
+	 * 和getBeanNamesForType()不一样
 	 */
 	<T> Map<String, T> getBeansOfType(@Nullable Class<T> type) throws BeansException;
 
