@@ -12,7 +12,7 @@
 可以的，Ioc容器启动有两个阶段：1、注册BeanDefinition 
 2、注册单例对象。注册单例对象的注册(DefaultSingletonBeanRegistry#registerSingleton())和BeanDefinition(DefaultListableBeanFactory#registerBeanDefinition())不同，BeanDefinition会被ConfigurableListableBeanFactory#freezeConfiguration()
 方法影响，从而冻结注册，而单例对象没有这个限制。  
-DefaultListableBeanFactory是DefaultSingletonBeanRegistry的子类  
+DefaultListableBeanFactory是DefaultSingletonBeanRegistry的子类   
 3、依赖注入的来源都有哪些
  
 

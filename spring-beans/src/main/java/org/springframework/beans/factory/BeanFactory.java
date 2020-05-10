@@ -135,6 +135,7 @@ public interface BeanFactory {
 	 * @return an instance of the bean
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the specified name
 	 * @throws BeansException if the bean could not be obtained
+	 * 根据Bean 名称查找
 	 */
 	Object getBean(String name) throws BeansException;
 
@@ -152,6 +153,7 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
 	 * @throws BeanNotOfRequiredTypeException if the bean is not of the required type
 	 * @throws BeansException if the bean could not be created
+	 * 根据Bean 名称 + 类型查找
 	 */
 	<T> T getBean(String name, Class<T> requiredType) throws BeansException;
 
@@ -184,6 +186,7 @@ public interface BeanFactory {
 	 * @throws BeansException if the bean could not be created
 	 * @since 3.0
 	 * @see ListableBeanFactory
+	 * 根据Bean 类型查找
 	 */
 	<T> T getBean(Class<T> requiredType) throws BeansException;
 
@@ -214,6 +217,7 @@ public interface BeanFactory {
 	 * @return a corresponding provider handle
 	 * @since 5.1
 	 * @see #getBeanProvider(ResolvableType)
+	 * 延迟查找
 	 */
 	<T> ObjectProvider<T> getBeanProvider(Class<T> requiredType);
 
@@ -230,6 +234,7 @@ public interface BeanFactory {
 	 * @see ObjectProvider#iterator()
 	 * @see ObjectProvider#stream()
 	 * @see ObjectProvider#orderedStream()
+	 * 延迟查找,返回ObjectProvider对象
 	 */
 	<T> ObjectProvider<T> getBeanProvider(ResolvableType requiredType);
 
