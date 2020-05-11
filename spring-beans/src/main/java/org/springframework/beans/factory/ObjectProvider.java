@@ -148,6 +148,7 @@ public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 	 * without specific ordering guarantees (but typically in registration order).
 	 * @since 5.1
 	 * @see #stream()
+	 * ObjectProvider.stream().forEach()
 	 */
 	@Override
 	default Iterator<T> iterator() {
