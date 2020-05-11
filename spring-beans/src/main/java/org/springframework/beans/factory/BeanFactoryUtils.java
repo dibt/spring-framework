@@ -289,12 +289,15 @@ public abstract class BeanFactoryUtils {
 		Assert.notNull(lbf, "ListableBeanFactory must not be null");
 		Map<String, T> result = new LinkedHashMap<>(4);
 		result.putAll(lbf.getBeansOfType(type));
+		//如果是层次性的 HierarchicalBeanFactory
 		if (lbf instanceof HierarchicalBeanFactory) {
 			HierarchicalBeanFactory hbf = (HierarchicalBeanFactory) lbf;
 			if (hbf.getParentBeanFactory() instanceof ListableBeanFactory) {
+				//递归查找
 				Map<String, T> parentResult = beansOfTypeIncludingAncestors(
 						(ListableBeanFactory) hbf.getParentBeanFactory(), type);
 				parentResult.forEach((beanName, beanInstance) -> {
+					//如果父类已经包含 beanName ，子类里的会被忽略掉
 					if (!result.containsKey(beanName) && !hbf.containsLocalBean(beanName)) {
 						result.put(beanName, beanInstance);
 					}
