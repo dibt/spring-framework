@@ -30,7 +30,7 @@
      -- findAnnotationOnBean(String, Class<? extend Annotation>)
 ### 层次类型依赖查找接口 - HierarchicalBeanFactory  
 HierarchicalBeanFactory-->ConfigurableBeanFactory-->ConfigurableListableBeanFactory 类似于 ClassLoader 双亲委派模式  
-HierarchicalBeanFactory#getParentBeanFactory  读
+HierarchicalBeanFactory#getParentBeanFactory  读  
 子类ConfigurableBeanFactory#setParentBeanFactory  写
   - 双亲 BeanFactory：getParentBeanFactory()
   - 层次性查找
@@ -51,10 +51,10 @@ HierarchicalBeanFactory#getParentBeanFactory  读
       - ifAvailable(Consumer)
    - Stream扩展 - stream() **类型安全**  
 如果需要实现延时查找，推荐使用 ObjectProvider 既能表示单一类型查找，又能表示集合类型查找
-DefaultListableBeanFactory 既是单一也是集合还是层次
+DefaultListableBeanFactory 既是单一也是集合还是层次  
 BeanFactory -> HierarchicalBeanFactory -> ConfigurableBeanFactory\ListableBeanFactory -> ConfigurableListableBeanFactory-> DefaultListableBeanFactory
  
-AbstractApplicationContext 内建可查询依赖  
+**AbstractApplicationContext 内建可查询依赖**  
 
 |Bean 名称|Bean 实例|使用场景|
 |:----:|:----:|:----:|
