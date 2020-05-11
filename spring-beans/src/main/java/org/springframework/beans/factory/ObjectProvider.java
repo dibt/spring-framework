@@ -49,6 +49,7 @@ public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 	 * @return an instance of the bean
 	 * @throws BeansException in case of creation errors
 	 * @see #getObject()
+	 * 类似于 BeanFactory#getBean 方法
 	 */
 	T getObject(Object... args) throws BeansException;
 
@@ -58,6 +59,7 @@ public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 	 * @return an instance of the bean, or {@code null} if not available
 	 * @throws BeansException in case of creation errors
 	 * @see #getObject()
+	 * 类型安全 返回一个 Bean 的实例或者 null
 	 */
 	@Nullable
 	T getIfAvailable() throws BeansException;
@@ -72,6 +74,7 @@ public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 	 * @throws BeansException in case of creation errors
 	 * @since 5.0
 	 * @see #getIfAvailable()
+	 * 返回一个 Bean 的实例或者 外部提供的默认的Supplier的默认值
 	 */
 	default T getIfAvailable(Supplier<T> defaultSupplier) throws BeansException {
 		T dependency = getIfAvailable();
@@ -90,6 +93,7 @@ public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 	default void ifAvailable(Consumer<T> dependencyConsumer) throws BeansException {
 		T dependency = getIfAvailable();
 		if (dependency != null) {
+			//消费数据
 			dependencyConsumer.accept(dependency);
 		}
 	}
@@ -101,6 +105,7 @@ public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 	 * not unique (i.e. multiple candidates found with none marked as primary)
 	 * @throws BeansException in case of creation errors
 	 * @see #getObject()
+	 * 类型安全
 	 */
 	@Nullable
 	T getIfUnique() throws BeansException;

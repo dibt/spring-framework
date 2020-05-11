@@ -41,7 +41,13 @@ HierarchicalBeanFactory#getParentBeanFactory  读
     - 集合类型：BeanFactoryUtils#beansOfTypeIncludingAncestors
   - 根据 Java 注解查找名称列表
     - BeanFactoryUtils#beanNamesForTypeIncludingAncestors
-    
+### Bean 延迟依赖查找接口
+  - ObjectFactory
+  - ObjectProvider  
+    - 函数式接口
+      - 
+      - 
+   - Stream
 ### 面试题
 1. 
  
