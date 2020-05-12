@@ -54,7 +54,7 @@ HierarchicalBeanFactory#getParentBeanFactory  读
 DefaultListableBeanFactory 既是单一也是集合还是层次  
 BeanFactory -> HierarchicalBeanFactory -> ConfigurableBeanFactory\ListableBeanFactory -> ConfigurableListableBeanFactory-> DefaultListableBeanFactory
  
-**AbstractApplicationContext 内建可查询依赖**  
+**AbstractApplicationContext 内建的可查询依赖**(AbstractApplicationContext 会在构建的过程中(也就是上下文启动过程中)会初始化一些相关的内部的一些依赖)  
 
 |Bean 名称|Bean 实例|使用场景|
 |:----:|:----:|:----:|
