@@ -65,10 +65,17 @@ BeanFactory -> HierarchicalBeanFactory -> ConfigurableBeanFactory\ListableBeanFa
 | lifecycleProcessor | LifeProcessor 对象 | Lifecycle Bean 处理器 |
 | applicationEventMulticaster | ApplicationEventMulticaster 对象 | Spring 事件广播器 |
 
-
+AnnotationConfigUtils
+### 依赖查找中的经典异常 -- BeansException
+NoSuchBeanDefinitionException  
+NoUniqueBeanDefinitionException等等
 ### 面试题
-1. 
- 
+1. ObjectFactory 与 BeanFactory 的区别  
+ObjectFactory 与 BeanFactory 均提供依赖查找的能力。不过 ObjectFactory 仅关注一种或者一种类型的 Bean 依赖查找，并且自身不具备依赖查找能力，能力是由 BeanFactory 输出。  
+BeanFactory则提供了单一类型、集合类型以及层次类型等多种依赖查找方式。  
+2. BeanFactory.getBean 操作是否线程安全  
+BeanFactory.getBean方法的执行是线程安全的，操作过程中会增加互斥锁
+3.
 
 
  

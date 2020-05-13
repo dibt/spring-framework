@@ -48,7 +48,10 @@ public class DefaultEventListenerFactory implements EventListenerFactory, Ordere
 	public boolean supportsMethod(Method method) {
 		return true;
 	}
-
+	
+	/**
+	 * 默认实现 做适配
+	 */
 	@Override
 	public ApplicationListener<?> createApplicationListener(String beanName, Class<?> type, Method method) {
 		return new ApplicationListenerMethodAdapter(beanName, type, method);
