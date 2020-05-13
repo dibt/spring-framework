@@ -208,6 +208,8 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	 * with the init and destroy annotation types set to
 	 * {@link javax.annotation.PostConstruct} and {@link javax.annotation.PreDestroy},
 	 * respectively.
+	 * Bean初始化注解 @PostConstruct
+	 * Bean销毁注解 @PreDestroy
 	 */
 	public CommonAnnotationBeanPostProcessor() {
 		setOrder(Ordered.LOWEST_PRECEDENCE - 3);

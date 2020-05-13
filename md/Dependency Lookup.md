@@ -64,6 +64,8 @@ BeanFactory -> HierarchicalBeanFactory -> ConfigurableBeanFactory\ListableBeanFa
 | messageSource | MessageSource 对象 | 国际化文案 |
 | lifecycleProcessor | LifeProcessor 对象 | Lifecycle Bean 处理器 |
 | applicationEventMulticaster | ApplicationEventMulticaster 对象 | Spring 事件广播器 |
+
+
 ### 面试题
 1. 
  
