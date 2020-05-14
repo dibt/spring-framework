@@ -5,7 +5,7 @@
  * 外部化配置 @Autowire、@Value都是通过AutowiredAnnotationBeanPostProcessor来处理的
  
  
-### 面试题
+### 面试题 
 1. 注入和查找的依赖来源是否相同？  
 不相同，依赖查找的来源仅限于Spring BeanDefinition 以及单例对象，而依赖注入的来源还包括Resolvable Dependency 以及@Value标注的外部化配置  
 2. 单例对象能在Ioc容器启动后注册吗？  
