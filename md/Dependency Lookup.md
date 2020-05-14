@@ -75,7 +75,8 @@ ObjectFactory 与 BeanFactory 均提供依赖查找的能力。不过 ObjectFact
 BeanFactory则提供了单一类型、集合类型以及层次类型等多种依赖查找方式。  
 2. BeanFactory.getBean 操作是否线程安全  
 BeanFactory.getBean方法的执行是线程安全的，操作过程中会增加互斥锁
-3.
+3. Spring 的依赖查找和依赖注入在来源上有什么区别  
+
 
 
  
