@@ -76,7 +76,7 @@ BeanFactory则提供了单一类型、集合类型以及层次类型等多种依
 2. BeanFactory.getBean 操作是否线程安全  
 BeanFactory.getBean方法的执行是线程安全的，操作过程中会增加互斥锁
 3. Spring 的依赖查找和依赖注入在来源上有什么区别  
-
+[依赖注入来源面试题解答](https://github.com/dibt/spring-framework/blob/master/md/Dependency%20Source.md)
 
 
  
