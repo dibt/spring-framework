@@ -39,6 +39,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Qualifier {
 
+	// 可以指定 Bean 名称或者 ID
 	String value() default "";
 
 }
