@@ -43,3 +43,5 @@
   - 依赖查找
   - 依赖注入（字段、方法）
 AutowiredAnnotationBeanPostProcessor 的内部类 AutowiredFieldElement#inject
+
+AbstractApplicationContext --> ConfigurableApplicationContext#refresh --> ApplicationContext

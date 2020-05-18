@@ -48,6 +48,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @see TransactionProxyFactoryBean
  * @see org.springframework.aop.framework.ProxyFactoryBean
  * @see org.springframework.aop.framework.ProxyFactory
+ * 事务拦截的对象是TransactionInterceptor
  */
 @SuppressWarnings("serial")
 public class TransactionInterceptor extends TransactionAspectSupport implements MethodInterceptor, Serializable {
@@ -85,8 +86,12 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 		setTransactionManager(ptm);
 		setTransactionAttributeSource(tas);
 	}
-
-
+	
+	
+	/**
+	 * 事务处理
+	 * {@link TransactionAspectSupport#invokeWithinTransaction}
+	 */
 	@Override
 	@Nullable
 	public Object invoke(MethodInvocation invocation) throws Throwable {

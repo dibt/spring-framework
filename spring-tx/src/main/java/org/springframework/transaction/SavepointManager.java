@@ -33,6 +33,7 @@ package org.springframework.transaction;
  * @see TransactionStatus
  * @see TransactionDefinition#PROPAGATION_NESTED
  * @see java.sql.Savepoint
+ * 回滚点管理器
  */
 public interface SavepointManager {
 
@@ -49,6 +50,7 @@ public interface SavepointManager {
 	 * @throws TransactionException if the savepoint could not be created,
 	 * for example because the transaction is not in an appropriate state
 	 * @see java.sql.Connection#setSavepoint
+	 * 创建回滚点
 	 */
 	Object createSavepoint() throws TransactionException;
 
@@ -62,6 +64,7 @@ public interface SavepointManager {
 	 * transaction does not support savepoints
 	 * @throws TransactionException if the rollback failed
 	 * @see java.sql.Connection#rollback(java.sql.Savepoint)
+	 * 回滚到回滚点
 	 */
 	void rollbackToSavepoint(Object savepoint) throws TransactionException;
 
@@ -76,6 +79,7 @@ public interface SavepointManager {
 	 * transaction does not support savepoints
 	 * @throws TransactionException if the release failed
 	 * @see java.sql.Connection#releaseSavepoint
+	 * 释放回滚点
 	 */
 	void releaseSavepoint(Object savepoint) throws TransactionException;
 

@@ -35,6 +35,7 @@ import java.io.Flushable;
  * @see PlatformTransactionManager#getTransaction
  * @see org.springframework.transaction.support.TransactionCallback#doInTransaction
  * @see org.springframework.transaction.interceptor.TransactionInterceptor#currentTransactionStatus()
+ * 事务运行的状态
  */
 public interface TransactionStatus extends TransactionExecution, SavepointManager, Flushable {
 
@@ -48,6 +49,7 @@ public interface TransactionStatus extends TransactionExecution, SavepointManage
 	 * @see #createSavepoint()
 	 * @see #rollbackToSavepoint(Object)
 	 * @see #releaseSavepoint(Object)
+	 * 是否有回滚点
 	 */
 	boolean hasSavepoint();
 
