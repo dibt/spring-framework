@@ -38,4 +38,8 @@
   - 入口 - DefaultListableBeanFactory#resolveDependency
   - 依赖描述符 - DependencyDescriptor
   - 自定绑定候选对象处理器 - AutowireCandidateResolver
-@Autowired 实时注入+类型查找
+- @Autowired 实时注入+类型查找
+  - 元信息解析
+  - 依赖查找
+  - 依赖注入（字段、方法）
+AutowiredAnnotationBeanPostProcessor 的内部类 AutowiredFieldElement#inject
