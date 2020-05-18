@@ -43,5 +43,20 @@
   - 依赖查找
   - 依赖注入（字段、方法）
 AutowiredAnnotationBeanPostProcessor 的内部类 AutowiredFieldElement#inject
+- 通用注解注入原理 - CommonAnnotationBeanPostProcessor
+  - 注入注解
+    - javax.annotation.Resource
+  - 生命周期注解
+    - javax.annotation.PostConstruct  
+    PostConstruct --> InitializingBean --> 自定义初始化方法
+    - javax.annotation.PreDestroy
+    PreDestroy --> DisposableBean --> 自定义销毁方法
 
 AbstractApplicationContext --> ConfigurableApplicationContext#refresh --> ApplicationContext
+### 面试题
+1. 又多少种依赖注入的方式
+  - Setter 注入 - 多依赖并且非强制依赖的情况
+  - 构造器注入 - 少依赖并且是强制依赖的情况
+  - 字段注入 - 开发病例
+  - 方法注入 - 做声明
+  - 接口回调注入 - 生命周期的回调
