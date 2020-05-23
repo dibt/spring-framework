@@ -109,6 +109,7 @@ public interface BeanDefinitionReader {
 	 * @see #getResourceLoader()
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource)
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
+	 * 返回读取到了多少个 BeanDefinition
 	 */
 	int loadBeanDefinitions(String location) throws BeanDefinitionStoreException;
 
