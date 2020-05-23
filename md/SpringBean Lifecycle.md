@@ -4,4 +4,6 @@
     - BeanDefinitionReader
     - XML 解析器 - BeanDefinitionParser
   - 面向注解 BeanDefinition 解析
-    - AnnotatedBeanDefinitionReader
+    - AnnotatedBeanDefinitionReader  
+BeanDefinitionRegistry --> DefaultListableBeanFactory
+Bean 名称生成来自于 BeanNameGenerator，注解实现 AnnotationBeanNameGenerator

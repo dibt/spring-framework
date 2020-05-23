@@ -71,8 +71,11 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	public static final AnnotationBeanNameGenerator INSTANCE = new AnnotationBeanNameGenerator();
 
 	private static final String COMPONENT_ANNOTATION_CLASSNAME = "org.springframework.stereotype.Component";
-
-
+	
+	
+	/**
+	 * 生成 BeanName
+	 */
 	@Override
 	public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
 		if (definition instanceof AnnotatedBeanDefinition) {
@@ -154,6 +157,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 * name may be an issue if you are autowiring by name.
 	 * @param definition the bean definition to build a bean name for
 	 * @return the default bean name (never {@code null})
+	 * 生成首字母小写的 BeanName
 	 */
 	protected String buildDefaultBeanName(BeanDefinition definition) {
 		String beanClassName = definition.getBeanClassName();
