@@ -67,6 +67,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 * A convenient constant for a default {@code AnnotationBeanNameGenerator} instance,
 	 * as used for component scanning purposes.
 	 * @since 5.2
+	 * 单例实现
 	 */
 	public static final AnnotationBeanNameGenerator INSTANCE = new AnnotationBeanNameGenerator();
 

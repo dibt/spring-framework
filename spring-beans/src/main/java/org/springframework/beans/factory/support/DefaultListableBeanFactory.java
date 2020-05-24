@@ -926,10 +926,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
+		//是否已经存在名称为 beanName 的BeanDefinition
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
-		//如果是重复注册
+		//如果是(重复注册)
 		if (existingDefinition != null) {
-			//判断是否允许覆盖
+			//判断是否允许覆盖(默认为 true )
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
 			}
@@ -941,6 +942,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							existingDefinition + "] with [" + beanDefinition + "]");
 				}
 			}
+			// 覆盖会输出 debug 级别的警告
 			else if (!beanDefinition.equals(existingDefinition)) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Overriding bean definition for bean '" + beanName +
@@ -959,7 +961,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 		//两种方式
 		else {
-			//beanDefinitionMap会变化
+			//beanDefinitionMap会变化 beanDefinitionMap 无序  beanDefinitionNames 有序 按照注册的顺序初始化
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
 				synchronized (this.beanDefinitionMap) {
