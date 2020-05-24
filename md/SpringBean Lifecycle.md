@@ -14,8 +14,8 @@ Bean 名称生成来自于 BeanNameGenerator，注解实现 AnnotationBeanNameGe
   - BeanDefinition 合并
     - 父子 BeanDefinition 合并
       - 当前 BeanFactory 查找
-      - 层次性 BeanFactory 查找  
+      - 层次性 BeanFactory 查找 --> AbstractBeanFactory#getMergedBeanDefinition  
 RootBeanDefinition 不需要合并，不存在 parent
-GenericBeanDefinition      
+GenericBeanDefinition 普通的 BeanDefinition，可以 setParent     
 
 

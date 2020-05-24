@@ -324,6 +324,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	 * @return a (potentially merged) BeanDefinition for the given bean
 	 * @throws NoSuchBeanDefinitionException if there is no bean definition with the given name
 	 * @since 2.5
+	 * 递归的合并 BeanDefinition，最终返回合并过的 BeanDefinition
 	 */
 	BeanDefinition getMergedBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
 
