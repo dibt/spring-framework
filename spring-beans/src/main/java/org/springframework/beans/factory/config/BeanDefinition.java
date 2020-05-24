@@ -114,6 +114,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * @see #getParentName()
 	 * @see #getFactoryBeanName()
 	 * @see #getFactoryMethodName()
+	 * 返回值是字符串
 	 */
 	@Nullable
 	String getBeanClassName();

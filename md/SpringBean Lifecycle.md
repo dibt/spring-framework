@@ -16,6 +16,11 @@ Bean 名称生成来自于 BeanNameGenerator，注解实现 AnnotationBeanNameGe
       - 当前 BeanFactory 查找
       - 层次性 BeanFactory 查找 --> AbstractBeanFactory#getMergedBeanDefinition  
 RootBeanDefinition 不需要合并，不存在 parent
-GenericBeanDefinition 普通的 BeanDefinition，可以 setParent     
+GenericBeanDefinition 普通的 BeanDefinition，可以 setParent    
+### Spring Bean Class 加载阶段 
+  - ClassLoader 类加载
+  - Java Security 安全控制
+  - ConfigurableBeanFactory 临时 ClassLoader
+
 
 
