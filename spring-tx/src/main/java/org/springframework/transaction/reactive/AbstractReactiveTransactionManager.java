@@ -104,16 +104,19 @@ public abstract class AbstractReactiveTransactionManager implements ReactiveTran
 		return TransactionSynchronizationManager.forCurrentTransaction()
 				.flatMap(synchronizationManager -> {
 
+			// 获取事务 AbstractPlatformTransactionManager#doGetTransaction
 			Object transaction = doGetTransaction(synchronizationManager);
 
 			// Cache debug flag to avoid repeated checks.
 			boolean debugEnabled = logger.isDebugEnabled();
 
+			// 如果已经存在事务，根据事务的传播级别进行处理 DataSourceTransactionManager#isExistingTransaction
 			if (isExistingTransaction(transaction)) {
 				// Existing transaction found -> check propagation behavior to find out how to behave.
 				return handleExistingTransaction(synchronizationManager, def, transaction, debugEnabled);
 			}
 
+			//如果不存在事务，新建事务并且设置相关属性
 			// Check definition settings for new transaction.
 			if (def.getTimeout() < TransactionDefinition.TIMEOUT_DEFAULT) {
 				return Mono.error(new InvalidTimeoutException("Invalid transaction timeout", def.getTimeout()));
@@ -142,6 +145,7 @@ public abstract class AbstractReactiveTransactionManager implements ReactiveTran
 								GenericReactiveTransaction status = newReactiveTransaction(
 										nestedSynchronizationManager, def, transaction, true,
 										debugEnabled, suspendedResources.orElse(null));
+								// 启动事务
 								return doBegin(nestedSynchronizationManager, transaction, def)
 										.doOnSuccess(ignore -> prepareSynchronization(nestedSynchronizationManager, status, def))
 										.thenReturn(status);
@@ -193,6 +197,7 @@ public abstract class AbstractReactiveTransactionManager implements ReactiveTran
 			return suspendedResources.flatMap(suspendedResourcesHolder -> {
 				GenericReactiveTransaction status = newReactiveTransaction(synchronizationManager,
 						definition, transaction, true, debugEnabled, suspendedResourcesHolder);
+				//启动事务
 				return doBegin(synchronizationManager, transaction, definition).doOnSuccess(ignore ->
 						prepareSynchronization(synchronizationManager, status, definition)).thenReturn(status)
 						.onErrorResume(ErrorPredicates.RUNTIME_OR_ERROR, beginEx ->
@@ -762,6 +767,7 @@ public abstract class AbstractReactiveTransactionManager implements ReactiveTran
 	 * @throws TransactionException in case of creation or system errors
 	 * @throws org.springframework.transaction.NestedTransactionNotSupportedException
 	 * if the underlying transaction does not support nesting (e.g. through savepoints)
+	 * DataSourceTransactionManager#doBegin
 	 */
 	protected abstract Mono<Void> doBegin(TransactionSynchronizationManager synchronizationManager,
 			Object transaction, TransactionDefinition definition) throws TransactionException;

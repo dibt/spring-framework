@@ -324,6 +324,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		if (this.reactiveAdapterRegistry != null) {
 			ReactiveAdapter adapter = this.reactiveAdapterRegistry.getAdapter(method.getReturnType());
 			if (adapter != null) {
+				//ReactiveTransactionSupport#invokeWithinTransaction
 				return new ReactiveTransactionSupport(adapter).invokeWithinTransaction(method, targetClass, invocation);
 			}
 		}
@@ -832,6 +833,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			// Optimize for Mono
 			if (Mono.class.isAssignableFrom(method.getReturnType())) {
 				return TransactionContextManager.currentContext().flatMap(context ->
+						// 创建事务
 						createTransactionIfNecessary(tm, txAttr, joinpointIdentification).flatMap(it -> {
 							try {
 								// Need re-wrapping until we get hold of the exception through usingWhen.
@@ -931,6 +933,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				@Nullable TransactionAttribute txAttr, final String joinpointIdentification) {
 
 			// If no name specified, apply method identification as transaction name.
+			// 无特殊指定，切入点名称为事务名称
 			if (txAttr != null && txAttr.getName() == null) {
 				txAttr = new DelegatingTransactionAttribute(txAttr) {
 					@Override
@@ -944,6 +947,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			Mono<ReactiveTransaction> tx = Mono.empty();
 			if (txAttr != null) {
 				if (tm != null) {
+					// 获取事务
 					tx = tm.getReactiveTransaction(txAttr);
 				}
 				else {
@@ -1032,12 +1036,15 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	 */
 	private static final class ReactiveTransactionInfo {
 
+		// 事务管理器
 		@Nullable
 		private final ReactiveTransactionManager transactionManager;
 
+		// 事务属性
 		@Nullable
 		private final TransactionAttribute transactionAttribute;
 
+		// 切入点标识
 		private final String joinpointIdentification;
 
 		@Nullable
