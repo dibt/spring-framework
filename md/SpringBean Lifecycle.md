@@ -21,6 +21,8 @@ GenericBeanDefinition 普通的 BeanDefinition，可以 setParent
   - ClassLoader 类加载
   - Java Security 安全控制
   - ConfigurableBeanFactory 临时 ClassLoader
-
-
+BeanDefinition --> Class  是通过 ClassLoader 加载的
+### Spring Bean 实例化前阶段
+ - 非主流生命周期 - Bean 实例化前阶段
+   - InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
 
