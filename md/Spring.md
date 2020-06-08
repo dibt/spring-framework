@@ -1,0 +1,6 @@
+### Spring 事务原理
+TransactionInterceptor#invoke  
+TransactionAspectSupport#invokeWithinTransaction  
+PlatformTransactionManager -> DataSourceTransactionManager
+TransactionStatus#getTransaction 默认实现  AbstractPlatformTransactionManager#getTransaction  
+TransactionDefinition
