@@ -333,7 +333,10 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			throw new TransactionSystemException("Could not commit JDBC transaction", ex);
 		}
 	}
-
+	
+	/**
+	 * 执行回滚操作
+	 */
 	@Override
 	protected void doRollback(DefaultTransactionStatus status) {
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) status.getTransaction();
