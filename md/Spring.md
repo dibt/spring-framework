@@ -12,3 +12,7 @@ AbstractPlatformTransactionManager#processRollback
 
 TransactionStatus#getTransaction 默认实现  AbstractPlatformTransactionManager#getTransaction  
 TransactionDefinition  
+
+### AOP调用顺序
+AbstractAutoProxyCreator#wrapIfNecessary -> AbstractAutoProxyCreator#createProxy -> ProxyFactory#getProxy -> 
+ProxyCreatorSupport#createAopProxy -> DefaultAopProxyFactory#createAopProxy  
