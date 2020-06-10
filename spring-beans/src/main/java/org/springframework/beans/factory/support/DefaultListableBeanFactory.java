@@ -125,7 +125,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	@Nullable
 	private static Class<?> javaxInjectProviderClass;
-	Callable
+	
 	static {
 		try {
 			javaxInjectProviderClass =
@@ -857,6 +857,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
+			// Bean 定义的公共抽象类是 AbstractBeanDefinition，普通 Bean 在Spring 加载 Bean 定义的时候，实例化出来的是
+			// GenericBeanDefinition，所以需要把非 RootBeanDefinition 转化为 RootBeanDefinition
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
 				if (isFactoryBean(beanName)) {
