@@ -30,9 +30,16 @@ privateGetDeclaredMethods 中的数据结构 ReflectionData，用来缓存从JVM
 中获取一次，并赋值给 ReflectionData，下次调用就可以使用缓存数据了。
 Method#invoke 这里的 MethodAccessor 对象是 invoke 方法实现的关键，一开始 methodAccessor 
 为空，需要调用 acquireMethodAccessor 生成一个新的 MethodAccessor 对象，在 
-acquireMethodAccessor 方法中，会通过 ReflectionFactory 类的 newMethodAccessor 创建一个实现 MethodAccessor 接口的对象  
+acquireMethodAccessor 方法中，会通过 ReflectionFactory 类的 newMethodAccessor 创建一个实现 MethodAccessor 接口的对象，MethodAccessor 
+实现有两个版本  
+- （1）一个是Java实现的。Java实现的版本在初始化时需要较多时间，但长久来说性能较好；  
+- （2）另一个是native code实现的  
+
+为了权衡两个版本的性能，Sun的JDK使用了inflation的技巧：让Java方法在被反射调用时，开头若干次(ReflectionFactory 的 inflationThreshold 属性，默认为 15)
+使用native版，等反射调用次数超过阈值（15次）时则生成一个专用的 MethodAccessor实现类，生成其中的 invoke() 方法的字节码，以后对该 Java 方法的反射调用就会使用 Java 版。
+
 在 ReflectionFactory 类中，有两个重要的字段：noInflation (默认false)和 inflationThreshold (默认15)，在 checkInitted 方法中可以通过 -Dsun.reflect
-.inflationThreshold=xxx和-Dsun.reflect.noInflation=true对这两个字段重新设置，而且只会设置一次；如果 
+.inflationThreshold=xxx和-Dsun.reflect.noInflation=true 对这两个字段重新设置，而且只会设置一次；如果 
 noInflation 为 false，方法 newMethodAccessor 都会返回 DelegatingMethodAccessorImpl 对象，其实 DelegatingMethodAccessorImpl 
 对象就是一个代理对象，负责调用被代理对象 delegate 的 invoke 方法，其中 delegate 参数目前是 NativeMethodAccessorImpl 对象，所以最终 Method 的 invoke 
 方法调用的是 NativeMethodAccessorImpl 对象 invoke 方法，这里用到了 
