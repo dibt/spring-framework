@@ -18,6 +18,11 @@ AbstractAutoProxyCreator#wrapIfNecessary -> AbstractAutoProxyCreator#createProxy
 ProxyCreatorSupport#createAopProxy -> DefaultAopProxyFactory#createAopProxy  
 
 ### JDK 动态代理
+Proxy#newProxyInstance  
+- 运行时获取需要生成代理对象的 Class 对象
+- 通过 Class 对象获取所需构造器
+- 将 InvocationHandler 实例作为参数，通过构造器创建代理对象  
+Proxy#ProxyClassFactory -> ProxyGenerator.generateProxyClass -> Proxy#defineClass0  
 
 Class#getDeclaredMethod  
 - 其中 privateGetDeclaredMethods 方法从缓存或 JVM 中获取该 Class 中申明的方法列表
@@ -53,7 +58,24 @@ ReflectionFactory 类中的 inflationThreshold，当 delegate 调用了15次 inv
 ** 这里需要注意的是：generateMethod 方法在生成 MethodAccessorImpl 对象时，会在内存中生成对应的字节码，并调用 ClassDefiner.defineClass 创建对应的 class 对象，在 
 ClassDefiner.defineClass 方法实现中，每被调用一次都会生成一个 DelegatingClassLoader 
 类加载器对象，这里每次都生成新的类加载器，是为了性能考虑，在某些情况下可以卸载这些生成的类，因为类的卸载是只有在类加载器可以被回收的情况下才会被回收的，如果用了原来的类加载器，那可能导致这些新创建的类一直无法被卸载 **
-### CGLib动态代理
+### CGLib动态代理  
+CGLIB（Code Generation Library），是一个代码生成的类库，可以在运行时动态的生成某个类的子类，注意，CGLIB是通过继承的方式做的动态代理，因此如果某个类被标记为final，那么它是无法使用CGLIB做动态代理的。
+
+MethodInterceptor#intercept
+Enhancer#create -> Enhancer#createHelper -> AbstractClassGenerator#create(Object) -> ClassLoaderData#get -> 
+AbstractClassGenerator#generate  
+- 代理类字节码的默认生成策略 DefaultGeneratorStrategy.INSTANCE  
+- 代理类的默认命名策略 DefaultNamingPolicy.INSTANCE  
+DefaultGeneratorStrategy 类中的 generate 方法，这是真正生成代理类的地方  
+MethodProxy类有两个主要的方法:  
+- invoke：调用代理类中被调用的方法  
+- invokeSuper: 直接在代理类中调用父类的方法
+
+区别
+- JDK动态代理  代理类与委托类实现同一接口，主要是通过代理类实现 InvocationHandler 并重写 invoke 方法来进行动态代理的，在 invoke 方法中将对方法进行增强处理，底层使用反射机制进行方法的调用
+- CGLIB动态代理  代理类将委托类作为自己的父类并为其中的非 final 委托方法创建两个方法，一个是与委托方法签名相同的方法，它在方法中会通过 
+super 调用委托方法；另一个是代理类独有的方法。在代理方法中，它会判断是否存在实现了 MethodInterceptor 接口的对象，若存在则将调用intercept方法对委托方法进行代理，底层将方法全部存入一个数组中，通过数组索引直接进行方法调用
+
                                              
                                          
 
