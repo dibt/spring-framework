@@ -70,6 +70,9 @@ DefaultGeneratorStrategy 类中的 generate 方法，这是真正生成代理类
 MethodProxy类有两个主要的方法:  
 - invoke：调用代理类中被调用的方法  
 - invokeSuper: 直接在代理类中调用父类的方法
+CGLIB 动态代理执行代理方法效率之所以比JDK 动态代理高，是因为 CGLIB 采用了 FastClass 机制。  
+FastClass 的原理简单来说就是：为不需要反射 invoke 调用的原类型生成一个 FastClass 类，然后给原类型的方法分配一个 index，在生成的 FastClass 中的 invoke 方法中，先直接把 Object
+ 强制转换为原类型，然后根据这个 index，就可以直接定位要调用的方法直接进行调用，这样省去了反射调用，所以调用效率比 JDK 动态代理通过反射调用效率高。
 
 区别
 - JDK动态代理  代理类与委托类实现同一接口，主要是通过代理类实现 InvocationHandler 并重写 invoke 方法来进行动态代理的，在 invoke 方法中将对方法进行增强处理，底层使用反射机制进行方法的调用
