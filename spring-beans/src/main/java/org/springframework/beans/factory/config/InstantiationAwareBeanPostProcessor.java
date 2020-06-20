@@ -69,6 +69,8 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @see #postProcessAfterInstantiation
 	 * @see org.springframework.beans.factory.support.AbstractBeanDefinition#getBeanClass()
 	 * @see org.springframework.beans.factory.support.AbstractBeanDefinition#getFactoryMethodName()
+	 * Bean 实例化之前的一个前置操作，重写这个方法可以把配置好的 Bean 覆盖掉
+	 * Bean 实例化之前
 	 */
 	@Nullable
 	default Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
@@ -89,6 +91,11 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * instances being invoked on this bean instance.
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see #postProcessBeforeInstantiation
+	 * 是否进行 Bean 属性赋值操作
+	 * 返回 true Bean属性会被赋值 默认为true
+	 * 返回 false 的话，后续的赋值操作会被调跳过
+	 * 可以自己实现 InstantiationAwareBeanPostProcessor 接口返回false，覆盖手动配置的 Bean 元信息
+	 * Bean 实例化之后，获取 Bean 属性值之前，Bean 属性赋值之前
 	 */
 	default boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
 		return true;
@@ -111,6 +118,8 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @since 5.1
 	 * @see #postProcessPropertyValues
+	 * 在 BeanFactory 给 Bean 属性赋值之前进行属性值覆盖
+	 *  Bean 实例化之后，获取 Bean 属性值之后，Bean 属性赋值之前
 	 */
 	@Nullable
 	default PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName)

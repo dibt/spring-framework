@@ -29,5 +29,12 @@ BeanDefinition --> Class  是通过 ClassLoader 加载的
   - 实例化方法
     - 传统实例化方式
       - 实例化策略 - InstantiationStrategy  
-    - 构造器依赖注入
-
+    - 依赖注入 -> 构造器依赖注入
+      - 构造器依赖注入按照类型注入，底层实现是 DefaultListableBeanFactory#resolveDependency
+  - Bean 属性赋值 (Populate) 判断
+    - InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation
+  - Bean 属性赋值前阶段
+    - Bean 属性值元信息
+      - PropertyValues
+    - Bean 属性赋值前回调
+     - InstantiationAwareBeanPostProcessor#postProcessProperties
