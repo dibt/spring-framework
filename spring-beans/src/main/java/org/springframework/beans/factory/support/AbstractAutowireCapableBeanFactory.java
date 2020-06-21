@@ -1793,6 +1793,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}, getAccessControlContext());
 		}
 		else {
+			// 接口回调
 			invokeAwareMethods(beanName, bean);
 		}
 

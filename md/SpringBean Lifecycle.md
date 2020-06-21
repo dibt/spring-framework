@@ -38,3 +38,17 @@ BeanDefinition --> Class  是通过 ClassLoader 加载的
       - PropertyValues
     - Bean 属性赋值前回调
      - InstantiationAwareBeanPostProcessor#postProcessProperties
+Spring Bean Aware 接口回调阶段 
+  - Spring Aware 接口
+    - BeanNameAware -> AbstractAutowireCapableBeanFactory#invokeAwareMethods
+    - BeanClassLoaderAware
+    - BeanFactoryAware
+    - EnvironmentAware -> AbstractApplicationContext#prepareBeanFactory -> 
+    ApplicationContextAwareProcessor#postProcessBeforeInstantiation -> 
+    ApplicationContextAwareProcessor#invokeAwareInterfaces
+    - EmbeddedValueResolverAware
+    - ResourceLoaderAware
+    - ApplicationEventPublisherAware
+    - MessageSourceAware
+    - ApplicationContextAware
+    
