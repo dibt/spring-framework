@@ -67,5 +67,10 @@ Spring Bean Aware 接口回调阶段
   - 方法回调 BeanPostProcessor#postProcessAfterInitialization
 ### Spring Bean 销毁前阶段
   - 方法回调
-    - DestructionAwareBeanPostProcessor#postProcessBeforeDestruction
-Spring 实现是基于 AbstractBeanFactory#destroyBean -> DisposableBeanAdapter#destroy
+    - DestructionAwareBeanPostProcessor#postProcessBeforeDestruction  
+  - Bean Destroy
+     - @PreDestroy 标注方法
+     - 实现DisposableBean 接口的 destroy 方法
+     - 自定义销毁方法
+Spring Bean Destroy 实现是基于 AbstractBeanFactory#destroyBean -> DisposableBeanAdapter#destroy
+
