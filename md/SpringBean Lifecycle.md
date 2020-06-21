@@ -40,7 +40,9 @@ BeanDefinition --> Class  是通过 ClassLoader 加载的
      - InstantiationAwareBeanPostProcessor#postProcessProperties
 Spring Bean Aware 接口回调阶段 
   - Spring Aware 接口
-    - BeanNameAware -> AbstractAutowireCapableBeanFactory#invokeAwareMethods
+    - BeanNameAware -> AbstractAutowireCapableBeanFactory#doCreateBean -> 
+    AbstractAutowireCapableBeanFactory#initializeBean 
+    ->AbstractAutowireCapableBeanFactory#invokeAwareMethods
     - BeanClassLoaderAware
     - BeanFactoryAware
     - EnvironmentAware -> AbstractApplicationContext#prepareBeanFactory -> 
@@ -51,4 +53,15 @@ Spring Bean Aware 接口回调阶段
     - ApplicationEventPublisherAware
     - MessageSourceAware
     - ApplicationContextAware
-    
+### 总结 Spring Bean 初始化前阶段
+  - Bean 实例化
+  - Bean 属性赋值
+  - Bean Aware 接口回调
+  - 方法回调 BeanPostProcessor#postProcessBeforeInstantiation
+### Spring Bean 初始化阶段
+  - Bean Initialization (回调顺序从上到下)
+    - @PostConstruct 标注方法，基于注解的驱动，和 BeanFactory 没有直接的关系（CommonAnnotationBeanPostProcessor）
+    - 实现 InitializingBean 接口的 afterPropertiesSet() 方法
+    - 自定义初始化方法
+### 总结 Spring Bean 初始化后阶段
+  - 方法回调 BeanPostProcessor#postProcessAfterInitialization
