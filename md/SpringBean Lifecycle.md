@@ -63,5 +63,9 @@ Spring Bean Aware 接口回调阶段
     - @PostConstruct 标注方法，基于注解的驱动，和 BeanFactory 没有直接的关系（CommonAnnotationBeanPostProcessor）
     - 实现 InitializingBean 接口的 afterPropertiesSet() 方法
     - 自定义初始化方法
-### 总结 Spring Bean 初始化后阶段
+### Spring Bean 初始化后阶段
   - 方法回调 BeanPostProcessor#postProcessAfterInitialization
+### Spring Bean 销毁前阶段
+  - 方法回调
+    - DestructionAwareBeanPostProcessor#postProcessBeforeDestruction
+Spring 实现是基于 AbstractBeanFactory#destroyBean -> DisposableBeanAdapter#destroy
