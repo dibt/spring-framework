@@ -73,4 +73,29 @@ Spring Bean Aware 接口回调阶段
      - 实现DisposableBean 接口的 destroy 方法
      - 自定义销毁方法
 Spring Bean Destroy 实现是基于 AbstractBeanFactory#destroyBean -> DisposableBeanAdapter#destroy
-
+### 面试题
+1. BeanPostProcessor 的使用场景有哪些
+  BeanPostProcessor 提供 Spring Bean 初始化前和初始化后的生命周期回调，分别对应 postProcessBeforeInstantiation 以及 
+  postProcessAfterInitialization 方法，允许对相关 Bean 进行扩展甚至替换，其中， ApplicationContext 相关的 Aware 回调也是基于 BeanPostProcessor 
+  实现，即 ApplicationContextAwareProcessor
+2. BeanFactoryPostProcessor 与 BeanPostProcessor 的区别
+  BeanFactoryPostProcessor 是 Spring BeanFactory(实际为 ConfigurationListableBeanFactory) 的后置处理器，用于扩展 BeanFactory 或者通过 
+  BeanFactory 进行依赖查找和依赖注入
+  BeanFactoryPostProcessor 必须有 Spring ApplicationContext 执行， BeanFactory 无法与其直接交互。
+  而 BeanPostProcessor 是直接与 BeanFactory 关联的，属于 N 对 1 的关系。
+3. BeanFactory 是怎样处理 Bean 生命周期的
+  BeanFactory 的默认实现是 DefaultListableBeanFactory，其中 Bean 生命周期与方法映射如下：
+    - BeanDefinition 注册阶段 - registerBeanDefinition
+    - BeanDefinition 合并阶段 - getMergedBeanDefinition
+    - Bean 实例化前阶段 - resolveBeforeInstantiation
+    - Bean 实例化阶段 - createBeanInstance
+    - Bean 实例化后阶段 - populateBean
+    - Bean 属性赋值前阶段 - populateBean
+    - Bean 属性赋值阶段 - populateBean
+    - Bean Aware 接口回调阶段 - initializeBean
+    - Bean 初始化前阶段 - initializeBean
+    - Bean 初始化阶段 - initializeBean
+    - Bean 初始化后阶段 - initializeBean
+    - Bean 初始化完成阶段 - preInstantiateSingletons
+    - Bean 销毁前阶段 - destroyBean
+    - Bean 销毁阶段 - destroyBean
