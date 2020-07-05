@@ -79,6 +79,28 @@ FastClass 的原理简单来说就是：为不需要反射 invoke 调用的原�
 - CGLIB动态代理  代理类将委托类作为自己的父类并为其中的非 final 委托方法创建两个方法，一个是与委托方法签名相同的方法，它在方法中会通过 
 super 调用委托方法；另一个是代理类独有的方法。在代理方法中，它会判断是否存在实现了 MethodInterceptor 接口的对象，若存在则将调用intercept方法对委托方法进行代理，底层将方法全部存入一个数组中，通过数组索引直接进行方法调用
 
+### Spring 解决循环依赖
+DefaultListableBeanFactory#registerSingleton -> DefaultSingletonBeanRegistry#registerSingleton，其中 
+DefaultSingletonBeanRegistry 的三个 Map 是解决循环依赖的重要的缓存。  
+```  
+        /** 一级缓存 缓存创建完成的单例对象的容器 */
+	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+
+	/** Cache of singleton factories: bean name to ObjectFactory. */
+	/** 三级缓存 缓存创建单例对象所使用的 BeanFactory */
+	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
+
+	/** Cache of early singleton objects: bean name to bean instance. */
+	/** 二级缓存 缓存单例对象早期的引用，这里的 Object 只是一个 Instance，还没有完成 Init，不是一个完整的 Bean  */
+	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
+```
+AbstractApplicationContext#refresh -> AbstractApplicationContext#finishBeanFactoryInitialization -> 
+**AbstractApplicationContext#getBean** -> AbstractBeanFactory#getBean -> AbstractBeanFactory#doGetBean -> 
+AbstractAutowireCapableBeanFactory#createBean -> AbstractAutowireCapableBeanFactory#doCreateBean -> 
+AbstractAutowireCapableBeanFactory#populateBean -> AbstractAutowireCapableBeanFactory#applyPropertyValues -> 
+BeanDefinitionValueResolver#resolveValueIfNecessary -> BeanDefinitionValueResolver#resolveReference -> 
+**AbstractApplicationContext#getBean**
+
                                              
                                          
 

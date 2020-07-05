@@ -255,7 +255,10 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	public String getParentName() {
 		return null;
 	}
-
+	
+	/**
+	 * RootBeanDefinition 是根，这里会抛异常
+	 */
 	@Override
 	public void setParentName(@Nullable String parentName) {
 		if (parentName != null) {
