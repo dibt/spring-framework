@@ -627,7 +627,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				if (exposedObject == bean) {
 					exposedObject = earlySingletonReference;
 				}
-				// initializeBean 会调用后置处理器，这个时候可以生成一个代理对象，那这个时候走这里
+				// initializeBean 会调用后置处理器，这个时候可以生成一个代理对象，那这个时候走这里的逻辑
 				else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
 					String[] dependentBeans = getDependentBeans(beanName);
 					Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
