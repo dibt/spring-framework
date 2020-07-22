@@ -48,7 +48,7 @@ acquireMethodAccessor 方法中，会通过 ReflectionFactory 类的 newMethodAc
 
 在 ReflectionFactory 类中，有两个重要的字段：noInflation (默认false)和 inflationThreshold (默认15)，在 checkInitted 方法中可以通过 -Dsun.reflect
 .inflationThreshold=xxx和-Dsun.reflect.noInflation=true 对这两个字段重新设置，而且只会设置一次；如果 
-noInflation 为 false，方法 newMethodAccessor 都会返回 DelegatingMethodAccessorImpl 对象。  
+noInflation 为 false，方法 newMethodAccessor 都会返回 MethodAccessorImpl  的一个子类对象，并设置到 DelegatingMethodAccessorImpl 对象里去了。  
 其实 DelegatingMethodAccessorImpl 
 对象就是一个代理对象，负责调用被代理对象 delegate 的 invoke 方法，其中 delegate 参数目前是 NativeMethodAccessorImpl 对象，所以最终 Method 的 invoke 
 方法调用的是 NativeMethodAccessorImpl 对象 invoke 方法，这里用到了 
@@ -100,6 +100,10 @@ AbstractAutowireCapableBeanFactory#createBean -> AbstractAutowireCapableBeanFact
 AbstractAutowireCapableBeanFactory#populateBean -> AbstractAutowireCapableBeanFactory#applyPropertyValues -> 
 BeanDefinitionValueResolver#resolveValueIfNecessary -> BeanDefinitionValueResolver#resolveReference -> 
 **AbstractApplicationContext#getBean**
+
+### ThreadLocal  
+  - InheritableThreadLocal 父子线程之间传递参数，入口为 Thread#init
+  
 
                                              
                                          
