@@ -7,3 +7,8 @@
        - 普通注解，StandardAnnotationMetadata 基于 Java 反射实现
        - AnnotationMetadataReadingVisitor 基于 ASM 动态字节码技术，性能会更高，不需要加载整个类，Spring5.2 之后已经被 @Deprecated，推荐使用 
        SimpleAnnotationMetadataReadingVisitor
+ - Bean 属性元信息 - PropertyValues
+   - 可修改实现 - MutablePropertyValues
+   - 元素成员 - PropertyValue
+ - Bean 属性上下文存储 - AttributeAccessor
+ - Bean 元信息元素 - BeanMetadataElement
