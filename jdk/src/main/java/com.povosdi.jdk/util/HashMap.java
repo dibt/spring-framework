@@ -1,4 +1,4 @@
-package com.povosdi.jdk;
+package com.povosdi.jdk.util;
 
 /**
  * @author： povosdi
