@@ -10,5 +10,9 @@
  - Bean 属性元信息 - PropertyValues
    - 可修改实现 - MutablePropertyValues
    - 元素成员 - PropertyValue
- - Bean 属性上下文存储 - AttributeAccessor
- - Bean 元信息元素 - BeanMetadataElement
+ - Bean 属性上下文存储 - AttributeAccessor (辅助作用)
+ - Bean 元信息元素 - BeanMetadataElement (辅助作用)
+ - 基于 XML 底层实现 XmlBeanDefinitionReader
+ - 基于 Properties 底层实现 PropertiesBeanDefinitionReader
+ - 基于 Java 注解 AnnotatedBeanDefinitionReader
+ - @Component -> ClassPathScanningCandidateComponentProvider 实现 
