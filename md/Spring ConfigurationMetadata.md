@@ -12,7 +12,31 @@
    - 元素成员 - PropertyValue
  - Bean 属性上下文存储 - AttributeAccessor (辅助作用)
  - Bean 元信息元素 - BeanMetadataElement (辅助作用)
- - 基于 XML 底层实现 XmlBeanDefinitionReader
- - 基于 Properties 底层实现 PropertiesBeanDefinitionReader
- - 基于 Java 注解 AnnotatedBeanDefinitionReader
+ - 基于 XML 资源 BeanDefinition 解析与注册  
+   - 底层实现 XmlBeanDefinitionReader
+     - 资源 Resource
+     - BeanDefinitionDocumentReader
+       - XML 解析 -> Java DOM Level 3 API
+       - BeanDefinition 解析 BeanDefinitionParserDelegate
+       - BeanDefinition 注册 BeanDefinitionRegistry
+
+ - 基于 Properties 资源 BeanDefinition 解析与注册 
+   - 底层实现 PropertiesBeanDefinitionReader
+     - 资源 
+       - 字节流 Resource
+       - 字符流 EncodedResource
+   - 底层
+     - 存储 java.util.Properties
+     - BeanDefinition 解析 API内部实现
+     - BeanDefinition 注册 BeanDefinitionRegistry
+ - 基于 Java 注解 BeanDefinition 解析与注册 
+  - 底层实现 AnnotatedBeanDefinitionReader
+    - 资源
+      - 类对象 java.lang.Class
+    - 底层
+      - 条件评估 ConditionEvaluator
+      - Bean 范围解析 ScopeMetadataResolver
+      - BeanDefinition 解析 API内部实现
+      - BeanDefinition 处理 AnnotationConfigUtils.processCommonDefinitionAnnotations
+      - BeanDefinition 注册 BeanDefinitionRegistry
  - @Component -> ClassPathScanningCandidateComponentProvider 实现 
