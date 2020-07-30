@@ -420,12 +420,13 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	/**
 	 * Holds cached entrySet(). Note that AbstractMap fields are used
 	 * for keySet() and values().
-	 *
+	 * 存放具体元素的集合
 	 */
 	transient Set<Entry<K,V>> entrySet;
 	
 	/**
 	 * The number of key-value mappings contained in this map.
+	 * 当前存储元素的数量
 	 */
 	transient int size;
 	
@@ -435,6 +436,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	 * the HashMap or otherwise modify its internal structure (e.g.,
 	 * rehash).  This field is used to make iterators on Collection-views of
 	 * the HashMap fail-fast.  (See ConcurrentModificationException).
+	 * map 结构变化的统计值
 	 */
 	transient int modCount;
 	
@@ -447,12 +449,16 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	// Additionally, if the table array has not been allocated, this
 	// field holds the initial array capacity, or zero signifying
 	// DEFAULT_INITIAL_CAPACITY.)
+	/**
+	 * 扩容临界值（容量*负载因子）
+	 */
 	int threshold;
 	
 	/**
 	 * The load factor for the hash table.
 	 *
 	 * @serial
+	 * 负载因子，默认 0.75f
 	 */
 	final float loadFactor;
 	
@@ -486,6 +492,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	 *
 	 * @param  initialCapacity the initial capacity.
 	 * @throws IllegalArgumentException if the initial capacity is negative.
+	 * 传入初始容量的构造函数
+	 * 默认负载因子
 	 */
 	public HashMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
@@ -494,6 +502,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	/**
 	 * Constructs an empty <tt>HashMap</tt> with the default initial capacity
 	 * (16) and the default load factor (0.75).
+	 * 无参构造函数 默认容量和负载因子
 	 */
 	public HashMap() {
 		this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
