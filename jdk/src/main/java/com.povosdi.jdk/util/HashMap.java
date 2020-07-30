@@ -252,13 +252,17 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	 * The maximum capacity, used if a higher value is implicitly specified
 	 * by either of the constructors with arguments.
 	 * MUST be a power of two <= 1<<30.
-	 * 最大容量 2的30次方
+	 * 默认最大容量 2的30次方
 	 */
 	static final int MAXIMUM_CAPACITY = 1 << 30;
 	
 	/**
 	 * The load factor used when none specified in constructor.
 	 * 默认负载因子
+	 * 为什么默认的负载因子是0.75f
+	 * 调小负载因子，HashMap 所能容纳的键值对变少，扩容时，重新将键值对存储到新的桶数组里，会减小键与键之间hash碰撞，链表的长度也会变短，增删改查等效率会变高，典型的空间换时间
+	 * 调大负载因子，HashMap 所能容纳的键值对变多，空间利用率高，键与键之间hash碰撞的概率也高，链表的长度也会变长，增删改查等效率会变低，典型的时间换空间
+	 * 默认的负载因子0.75f 是大多数情况下时间和空间代价达到了平衡的一个值
 	 */
 	static final float DEFAULT_LOAD_FACTOR = 0.75f;
 	
@@ -394,14 +398,19 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	
 	/**
 	 * Returns a power of two size for the given target capacity.
+	 * 计算出大于等于cap的最小的2的N次幂的数
+	 * 方法原理：将最高位的1 后面的位全变为1
 	 */
 	static final int tableSizeFor(int cap) {
-		int n = cap - 1;
-		n |= n >>> 1;
-		n |= n >>> 2;
-		n |= n >>> 4;
-		n |= n >>> 8;
-		n |= n >>> 16;
+		// 减1 是为了 cap 本身就是 2 的N 次幂
+		int n = cap - 1;// 16 -> 10000，11->01011 减去1之后 01111 01010
+		n |= n >>> 1; // 01111 | 00111 -> 01111    01010 | 00101 -> 01111
+		n |= n >>> 2; // 01111 | 00011 -> 01111    01111 | 00011 -> 01111
+		n |= n >>> 4; // 01111 | 00000 -> 01111    01111 | 00000 -> 01111
+		n |= n >>> 8; // 01111 | 00000 -> 01111    01111 | 00000 -> 01111
+		// 最大值是2的30次幂，所以第5次右移16位肯定能找到大于等于cap的最小的2的N次幂的数
+		n |= n >>> 16; // 01111 | 00000 -> 01111    01111 | 00000 -> 01111
+		// 16最终返回16 11最终返回16
 		return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
 	}
 	
@@ -472,17 +481,23 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	 * @param  loadFactor      the load factor
 	 * @throws IllegalArgumentException if the initial capacity is negative
 	 *         or the load factor is nonpositive
+	 * 传入初始容量和负载因子
 	 */
 	public HashMap(int initialCapacity, float loadFactor) {
+		// 初始容量小于0，抛出异常
 		if (initialCapacity < 0)
 			throw new IllegalArgumentException("Illegal initial capacity: " +
 					initialCapacity);
+		// 初始容量不能大于默认最大容量，否则为默认最大容量
 		if (initialCapacity > MAXIMUM_CAPACITY)
 			initialCapacity = MAXIMUM_CAPACITY;
+		// 负载因子不能小于等于0，也不能时非数字，否则抛异常
 		if (loadFactor <= 0 || Float.isNaN(loadFactor))
 			throw new IllegalArgumentException("Illegal load factor: " +
 					loadFactor);
+		// 初始化负载因子
 		this.loadFactor = loadFactor;
+		// 初始化扩容阈值
 		this.threshold = tableSizeFor(initialCapacity);
 	}
 	
@@ -516,6 +531,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	 *
 	 * @param   m the map whose mappings are to be placed in this map
 	 * @throws  NullPointerException if the specified map is null
+	 *
 	 */
 	public HashMap(Map<? extends K, ? extends V> m) {
 		this.loadFactor = DEFAULT_LOAD_FACTOR;
