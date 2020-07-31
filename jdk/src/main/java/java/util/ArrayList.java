@@ -111,6 +111,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Default initial capacity.
+	 * 默认容量
      */
     private static final int DEFAULT_CAPACITY = 10;
 
@@ -131,6 +132,7 @@ public class ArrayList<E> extends AbstractList<E>
      * The capacity of the ArrayList is the length of this array buffer. Any
      * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
      * will be expanded to DEFAULT_CAPACITY when the first element is added.
+	 * 实际存储结构
      */
     transient Object[] elementData; // non-private to simplify nested class access
 
@@ -138,6 +140,7 @@ public class ArrayList<E> extends AbstractList<E>
      * The size of the ArrayList (the number of elements it contains).
      *
      * @serial
+	 * 元素个数
      */
     private int size;
 
@@ -310,6 +313,7 @@ public class ArrayList<E> extends AbstractList<E>
      * More formally, returns the lowest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
+	 * 获取元素下标，方法实现区分 null 和 非null
      */
     public int indexOf(Object o) {
         if (o == null) {
@@ -330,6 +334,7 @@ public class ArrayList<E> extends AbstractList<E>
      * More formally, returns the highest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
+	 * 最后一个元素索引下标，和 indelOf 方法类似，只不过这个实现是倒序遍历
      */
     public int lastIndexOf(Object o) {
         if (o == null) {
@@ -349,6 +354,7 @@ public class ArrayList<E> extends AbstractList<E>
      * elements themselves are not copied.)
      *
      * @return a clone of this <tt>ArrayList</tt> instance
+	 * 最终调用的是 System#arraycopy
      */
     public Object clone() {
         try {
