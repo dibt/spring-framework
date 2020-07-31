@@ -357,6 +357,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	 * cheapest possible way to reduce systematic lossage, as well as
 	 * to incorporate impact of the highest bits that would otherwise
 	 * never be used in index calculations because of table bounds.
+	 * hash 函数
+	 * 原理：key 值的 hashCode值 与 hashCode值右移16位之后做异或，加大低位信息的随机性，变相的让高16位也参与到计算中
 	 */
 	static final int hash(Object key) {
 		int h;
@@ -614,14 +616,21 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 	 */
 	final Node<K,V> getNode(int hash, Object key) {
 		Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
+		// 三个条件 table 不为null && tab.length > 0 && tab[(n - 1) & hash] 不为null
+		// 即桶中第一个元素不为空
 		if ((tab = table) != null && (n = tab.length) > 0 &&
 				(first = tab[(n - 1) & hash]) != null) {
+			// 判断第一个元素是否是要查找的元素，是，直接返回
 			if (first.hash == hash && // always check first node
 					((k = first.key) == key || (key != null && key.equals(k))))
 				return first;
+			// 桶中不止一个元素
 			if ((e = first.next) != null) {
+				// 判断桶中第一个元素是否是红黑树结构
 				if (first instanceof TreeNode)
+					// 调用相关红黑树查找方法
 					return ((TreeNode<K,V>)first).getTreeNode(hash, key);
+				// 否则遍历链表查找
 				do {
 					if (e.hash == hash &&
 							((k = e.key) == key || (key != null && key.equals(k))))
