@@ -334,7 +334,7 @@ public class ArrayList<E> extends AbstractList<E>
      * More formally, returns the highest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
-	 * 最后一个元素索引下标，和 indelOf 方法类似，只不过这个实现是倒序遍历
+	 * 最后一个元素索引下标，和 indexOf 方法类似，只不过这个实现是倒序遍历
      */
     public int lastIndexOf(Object o) {
         if (o == null) {

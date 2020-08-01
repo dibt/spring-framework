@@ -248,7 +248,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * The load factor used when none specified in constructor.
 	 * 默认负载因子
 	 * 为什么默认的负载因子是0.75f
-	 * 调小负载因子，HashMap 所能容纳的键值对变少，扩容时，重新将键值对存储到新的桶数组里，会减小键与键之间hash碰撞，链表的长度也会变短，增删改查等效率会变高，典型的空间换时间
+	 * 调小负载因子，HashMap 所能容纳的键值对变少，扩容时，重新将键值对存储到新的数组桶里，会减小键与键之间hash碰撞，链表的长度也会变短，增删改查等效率会变高，典型的空间换时间
 	 * 调大负载因子，HashMap 所能容纳的键值对变多，空间利用率高，键与键之间hash碰撞的概率也高，链表的长度也会变长，增删改查等效率会变低，典型的时间换空间
 	 * 默认的负载因子0.75f 是大多数情况下时间和空间代价达到了平衡的一个值
      */
@@ -670,7 +670,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
         Node<K,V>[] tab; Node<K,V> p; int n, i;
-		// table 为空先进行初始化
+		// table 为空先进行初始化，就是通过扩容 resize() 的方式初始化 table
         if ((tab = table) == null || (n = tab.length) == 0)
             n = (tab = resize()).length;
 		// 如果 tab[i = (n - 1) & hash] 为空的话，直接放入到该桶中
@@ -678,27 +678,40 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             tab[i] = newNode(hash, key, value, null);
         else {
             Node<K,V> e; K k;
+            // 如果 tab[i = (n - 1) & hash] 不为空并且等于待放入的key的话，直接替换
             if (p.hash == hash &&
                 ((k = p.key) == key || (key != null && key.equals(k))))
                 e = p;
+            // 否则判断桶中元素的数据结构类型，如果是红黑树，则调用红黑树的插入方法
             else if (p instanceof TreeNode)
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
             else {
+            	// 否则就是链表，遍历链表，并统计链表长度
                 for (int binCount = 0; ; ++binCount) {
+                	// 如果到达链表尾部，则直接插入
                     if ((e = p.next) == null) {
                         p.next = newNode(hash, key, value, null);
+                        // 判断链表长度是否达到转换为红黑树的阈值
                         if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                        	// 链表转换为红黑树(注意，达到阈值是其中一个条件，树化的另外一个条件是table.length > 64,也就是 MIN_TREEIFY_CAPACITY 的大小)
+                        	// 为什么链表树化的阈值是 8 或则红黑树转换为链表的阈值是 6
+                        	// 大于8继续用链表的化，插入效率高，查询效率低
+                        	// 小于6继续用红黑树的化，因为红黑树插入元素需要就行左旋或者右旋，插入效率低，查询效率高 这两个阈值也是一个折中平衡的结果
                             treeifyBin(tab, hash);
                         break;
                     }
+                    // 判断链表中的结点和要插入的key是否相同，相同直接退出
                     if (e.hash == hash &&
                         ((k = e.key) == key || (key != null && key.equals(k))))
                         break;
+                    // 否则继续遍历链表
                     p = e;
                 }
             }
+            // 判断要插入的键值对是否存在与 HashMap 中
             if (e != null) { // existing mapping for key
                 V oldValue = e.value;
+                // 默认onlyIfAbsent=false 表示仅在 oldValue 为 null 的情况下更新键值对的值
                 if (!onlyIfAbsent || oldValue == null)
                     e.value = value;
                 afterNodeAccess(e);
@@ -706,6 +719,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
         }
         ++modCount;
+        // 判断键值对是否大于扩容阈值，是则进行扩容
         if (++size > threshold)
             resize();
         afterNodeInsertion(evict);
@@ -720,49 +734,70 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * with a power of two offset in the new table.
      *
      * @return the table
+	 * 扩容操作
+	 * 按照当前数组桶长度的2倍进行扩容，阈值也变为原来的2倍
      */
     final Node<K,V>[] resize() {
+    	// 待扩容的数组桶
         Node<K,V>[] oldTab = table;
         int oldCap = (oldTab == null) ? 0 : oldTab.length;
         int oldThr = threshold;
         int newCap, newThr = 0;
+		// 如果桶数组的容量 > 0
         if (oldCap > 0) {
+        	// 旧容量 > 默认最大容量,把扩容阈值改为默认最大容量，直接返回
             if (oldCap >= MAXIMUM_CAPACITY) {
                 threshold = Integer.MAX_VALUE;
                 return oldTab;
             }
+            // 旧容量先左移1位(扩大2倍)
+            // 然后扩容后的新容量小于默认最大容量并且旧容量大于默认初始容量16，则扩容阈值才会左移1位(扩大2倍)
             else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
                      oldCap >= DEFAULT_INITIAL_CAPACITY)
                 newThr = oldThr << 1; // double threshold
         }
+        // 如果桶数组的容量 <= 0 且 旧的扩容阈值 > 0 (带有 threshold 的构造函数初始化 HashMap)
         else if (oldThr > 0) // initial capacity was placed in threshold
+        	// 新容量 = 旧的扩容阈值
             newCap = oldThr;
         else {               // zero initial threshold signifies using defaults
+        	// 无参构造初始化 HashMap
             newCap = DEFAULT_INITIAL_CAPACITY;
             newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
         }
+        // 如果新的扩容阈值为0
         if (newThr == 0) {
+        	// 根据新的容量重新计算扩容阈值
             float ft = (float)newCap * loadFactor;
             newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
                       (int)ft : Integer.MAX_VALUE);
         }
+        // 更新扩容阈值
         threshold = newThr;
         @SuppressWarnings({"rawtypes","unchecked"})
             Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
+        // 覆盖旧的数组桶
         table = newTab;
+        // 如果旧的数组桶不为空，则遍历数组桶，将键值对重新映射到新的数组桶中
         if (oldTab != null) {
             for (int j = 0; j < oldCap; ++j) {
                 Node<K,V> e;
                 if ((e = oldTab[j]) != null) {
+                	// 旧的数组桶的元素置为 null
                     oldTab[j] = null;
+                    // 如果旧的数组桶对应的下标中只有一个结点，则直接重新映射到新的数据桶中，注意重新映射的算法 newTab[e.hash & (newCap - 1)]
                     if (e.next == null)
                         newTab[e.hash & (newCap - 1)] = e;
+                    // 不止一个结点，判断旧的数组桶对应的下标中结点的数据结构
                     else if (e instanceof TreeNode)
+                    	// 如果是红黑树，重新映射时需要将红黑树进行拆分
                         ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
                     else { // preserve order
+                    	// 否则就遍历链表，将旧的结点重新进行分组
                         Node<K,V> loHead = null, loTail = null;
                         Node<K,V> hiHead = null, hiTail = null;
                         Node<K,V> next;
+                        // 遍历链表，并将链表结点按照原顺序进行重新映射
                         do {
                             next = e.next;
                             if ((e.hash & oldCap) == 0) {
