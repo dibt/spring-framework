@@ -117,6 +117,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Shared empty array instance used for empty instances.
+	 * 如果自定义容量为0 则默认会用它初始化 ArrayList
      */
     private static final Object[] EMPTY_ELEMENTDATA = {};
 
@@ -124,6 +125,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Shared empty array instance used for default sized empty instances. We
      * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
      * first element is added.
+	 * 如果没有自定义容量，则会用它来初始化 ArrayList
      */
     private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
 
@@ -247,6 +249,11 @@ public class ArrayList<E> extends AbstractList<E>
      * Some VMs reserve some header words in an array.
      * Attempts to allocate larger arrays may result in
      * OutOfMemoryError: Requested array size exceeds VM limit
+	 * 最大容量
+	 * 为什么是 Integer.MAX_VALUE - 8
+	 * 1、存储 header words
+	 * 2、避免一些机器内存溢出，减少出错的概率
+	 * 3、当 Integer.MAX_VALUE-8 依旧无法满足需求时，最大还是可以支持到 Integer.MAX_VALUE
      */
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
@@ -255,10 +262,12 @@ public class ArrayList<E> extends AbstractList<E>
      * number of elements specified by the minimum capacity argument.
      *
      * @param minCapacity the desired minimum capacity
+	 * 扩容操作
      */
     private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = elementData.length;
+        // 扩容后的容量是扩容前的 1.5 倍
         int newCapacity = oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
@@ -271,6 +280,7 @@ public class ArrayList<E> extends AbstractList<E>
     private static int hugeCapacity(int minCapacity) {
         if (minCapacity < 0) // overflow
             throw new OutOfMemoryError();
+        // 当 Integer.MAX_VALUE-8 依旧无法满足需求时，最大还是可以支持到 Integer.MAX_VALUE
         return (minCapacity > MAX_ARRAY_SIZE) ?
             Integer.MAX_VALUE :
             MAX_ARRAY_SIZE;
@@ -463,9 +473,21 @@ public class ArrayList<E> extends AbstractList<E>
      *
      * @param e element to be appended to this list
      * @return <tt>true</tt> (as specified by {@link Collection#add})
+	 * ArrayList 是线性表（数组）
+	 * get(index) 获取元素，复杂度O(1)
+	 * add(E) 添加元素，复杂度O(1)
+	 * add(index,E) 指定位置添加元素，复杂度O(n)
+	 * remove(index) 删除元素，移动数组，复杂度O(n)
+	 *
+	 * LinkdeList 是链表
+	 * get(index) 获取元素，依次便利，复杂度O(n)
+	 * add(E) 添加元素，复杂度O(1)
+	 * add(index,E) 指定位置添加元素，需要先查找再添加，复杂度O(n)
+	 * remove(index) 删除元素，移动指针，复杂度O(1)
      */
     public boolean add(E e) {
         ensureCapacityInternal(size + 1);  // Increments modCount!!
+		// 数组尾部添加数据
         elementData[size++] = e;
         return true;
     }
@@ -478,6 +500,8 @@ public class ArrayList<E> extends AbstractList<E>
      * @param index index at which the specified element is to be inserted
      * @param element element to be inserted
      * @throws IndexOutOfBoundsException {@inheritDoc}
+	 * 向数组的制定位置添加元素
+	 * 会伴随大量的数组移动和复制操作
      */
     public void add(int index, E element) {
         rangeCheckForAdd(index);
