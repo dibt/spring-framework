@@ -666,6 +666,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param onlyIfAbsent if true, don't change existing value
      * @param evict if false, the table is in creation mode.
      * @return previous value, or null if none
+	 *  1.7 先扩容后插入 因为1.7 的 hash 函数加了一个随机种子，扩容之后随机种子可能会发生变化，需要重新计算 index 值 如果先插入后扩容，扩容的时候还是要计算一次 index 的，导致效率比较低
+	 *  1.8 先插入后扩容 因为1.8 的 hash 函数只与 key 的 hash 值 和 数组长度有关系，它并没有重新计算元素在数组中的位置，而是采用了 原始位置加原数组长度的方法计算得到位置 详情参考 resize()
      */
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
@@ -817,10 +819,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                         } while ((e = next) != null);
                         if (loTail != null) {
                             loTail.next = null;
+                            // 元素位置在扩容后数组中的位置没有发生改变
                             newTab[j] = loHead;
                         }
                         if (hiTail != null) {
                             hiTail.next = null;
+                            // 元素位置在扩容后数组中的位置发生了改变，新的下标位置是原下标位置+原数组长度
                             newTab[j + oldCap] = hiHead;
                         }
                     }
