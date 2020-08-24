@@ -749,17 +749,26 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * full volatile semantics, but are currently coded as volatile
      * writes to be conservative.
      */
-
+	
+	/**
+	 * 获取 table 数组中索引为 i 的 Node 元素。
+	 */
     @SuppressWarnings("unchecked")
     static final <K,V> Node<K,V> tabAt(Node<K,V>[] tab, int i) {
         return (Node<K,V>)U.getObjectVolatile(tab, ((long)i << ASHIFT) + ABASE);
     }
-
+	
+	/**
+	 * 利用 CAS 操作设置 table 数组中索引为 i 的元素
+	 */
     static final <K,V> boolean casTabAt(Node<K,V>[] tab, int i,
                                         Node<K,V> c, Node<K,V> v) {
         return U.compareAndSwapObject(tab, ((long)i << ASHIFT) + ABASE, c, v);
     }
-
+	
+	/**
+	 * 该方法用来设置 table 数组中索引为 i 的元素
+	 */
     static final <K,V> void setTabAt(Node<K,V>[] tab, int i, Node<K,V> v) {
         U.putObjectVolatile(tab, ((long)i << ASHIFT) + ABASE, v);
     }
@@ -769,11 +778,13 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /**
      * The array of bins. Lazily initialized upon first insertion.
      * Size is always a power of two. Accessed directly by iterators.
+	 * Node 数组
      */
     transient volatile Node<K,V>[] table;
 
     /**
      * The next table to use; non-null only while resizing.
+	 * 扩容时使用的 Node 数组，平时为 null,只有扩容时为非 null
      */
     private transient volatile Node<K,V>[] nextTable;
 
@@ -791,6 +802,11 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * when table is null, holds the initial table size to use upon
      * creation, or 0 for default. After initialization, holds the
      * next element count value upon which to resize the table.
+	 * 该属性用来控制 table 数组的大小，根据是否初始化和是否正在扩容有几种情况：
+	 * 1、当值为负数时：如果为-1 表示正在初始化，如果为-N 则表示当前正有 N-1 个线程进行扩容操作；
+	 * 2、当值为正数时：如果当前数组为 null 的话表示 table 在初始化过程中，sizeCtl 表示为需要新建数组的长度；
+	 * 若已经初始化了，表示当前数据容器（table 数组）可用容量也可以理解成临界值（插入节点数超过了该临界值就需要扩容），具体指为数组的长度 n 乘以
+	 * 加载因子 loadFactor； 当值为 0 时，即数组长度为默认初始值。
      */
     private transient volatile int sizeCtl;
 
@@ -819,6 +835,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
     /**
      * Creates a new, empty map with the default initial table size (16).
+	 * 构造一个空的map，即 table 数组还未初始化，初始化放在第一次插入数据时，默认大小为16
      */
     public ConcurrentHashMap() {
     }
@@ -2159,6 +2176,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
     /**
      * A node inserted at head of bins during transfer operations.
+	 * 在扩容时才会出现的特殊节点，其 key,value,hash 全部为 null。并拥有 nextTable 指针引用新的 table 数组。
      */
     static final class ForwardingNode<K,V> extends Node<K,V> {
         final Node<K,V>[] nextTable;
@@ -3239,7 +3257,14 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                 return false;
             return true;
         }
-
+	
+		/**
+		 * 该类提供了一些可以直接操控内存和线程的底层操作
+		 * 实际上是利用了 CAS 算法保证了线程安全性，这是一种乐观策略，假设每一次操作都不会产生冲突，当且仅当冲突发生的时候再去尝试。
+		 * 而 CAS 操作依赖于现代处理器指令集，通过底层 CMPXCHG 指令实现。CAS(V,O,N)核心思想为：若当前变量实际值 V 与期望的旧值 O
+		 * 相同，则表明该变量没被其他线程进行修改，因此可以安全的将新值 N 赋值给变量；若当前变量实际值 V 与期望的旧值 O 不相同，
+		 * 则表明该变量已经被其他线程做了处理，此时将新值 N 赋给变量操作就是不安全的，再进行重试。
+		 */
         private static final sun.misc.Unsafe U;
         private static final long LOCKSTATE;
         static {
