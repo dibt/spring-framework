@@ -180,6 +180,7 @@ public interface Lock {
      * may throw an (unchecked) exception in such circumstances.  The
      * circumstances and the exception type must be documented by that
      * {@code Lock} implementation.
+	 * 一直阻塞获取锁，直到获取成功
      */
     void lock();
 
@@ -228,6 +229,7 @@ public interface Lock {
      * @throws InterruptedException if the current thread is
      *         interrupted while acquiring the lock (and interruption
      *         of lock acquisition is supported)
+	 * 尝试获取锁，直到获取锁或者线程被中断
      */
     void lockInterruptibly() throws InterruptedException;
 
@@ -257,6 +259,7 @@ public interface Lock {
      *
      * @return {@code true} if the lock was acquired and
      *         {@code false} otherwise
+	 * 尝试获取空闲的锁，获取成功返回true，获取失败返回false,不会阻塞，立即返回
      */
     boolean tryLock();
 
@@ -317,6 +320,7 @@ public interface Lock {
      * @throws InterruptedException if the current thread is interrupted
      *         while acquiring the lock (and interruption of lock
      *         acquisition is supported)
+	 * 尝试在time时间内获取空闲的锁，在等待时间内可以被中断
      */
     boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
 
@@ -331,6 +335,7 @@ public interface Lock {
      * an (unchecked) exception if the restriction is violated.
      * Any restrictions and the exception
      * type must be documented by that {@code Lock} implementation.
+	 * 释放锁
      */
     void unlock();
 
@@ -352,6 +357,7 @@ public interface Lock {
      * @return A new {@link Condition} instance for this {@code Lock} instance
      * @throws UnsupportedOperationException if this {@code Lock}
      *         implementation does not support conditions
+	 * 返回当前锁的一个condition实例，用于条件性等待
      */
     Condition newCondition();
 }
