@@ -611,6 +611,9 @@ public abstract class AbstractQueuedSynchronizer
      * @param node the node to insert
      * @return node's predecessor
 	 * 循环入等待队列，直到入队成功为止
+	 * 1、首先node.prev = t ，将当前node的prev指向tail节点；
+	 * ​2、CAS将tail 指向新node结点；
+	 * ​3、将之前tail节点的next指向当前节点
      */
     private Node enq(final Node node) {
         for (;;) {
@@ -692,6 +695,8 @@ public abstract class AbstractQueuedSynchronizer
         // 取到当前节点的下一个节点
         Node s = node.next;
         // 如果节点为空，或者节点是取消状态，那么就循环从尾部节点找到当前节点的下一个节点唤醒
+		// 为什么会从 tail 向 head 遍历查找节点
+		// 因为并发入等待队列的时候是先设置的pre 再设置的 next
         if (s == null || s.waitStatus > 0) {
             s = null;
             for (Node t = tail; t != null && t != node; t = t.prev)
@@ -929,6 +934,7 @@ public abstract class AbstractQueuedSynchronizer
                 // 判断当前节点是否应该被阻塞,是的话就把当前线程阻塞挂起，防止无谓的死循环
                 if (shouldParkAfterFailedAcquire(p, node) &&
                     parkAndCheckInterrupt())
+                	// interrupted设置为true，表示曾经被中断过
                     interrupted = true;
             }
         } finally {
