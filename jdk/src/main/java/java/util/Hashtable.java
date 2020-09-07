@@ -453,6 +453,8 @@ public class Hashtable<K,V>
      *               <code>null</code>
      * @see     Object#equals(Object)
      * @see     #get(Object)
+	 * HashMap 不能存储为 null 的 K-V 因为并发情况下的 get(K) 为 null 不知道是存储的本身为 null 还是对应的 K 不存在于该 HashMap 中
+	 * 而 HashTable 中有 contains(K) 方法用作判断，HashMap 在并发情况下的 contains(K) 是不可靠的
      */
     public synchronized V put(K key, V value) {
         // Make sure the value is not null
