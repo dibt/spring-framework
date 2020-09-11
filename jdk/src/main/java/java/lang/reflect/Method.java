@@ -75,14 +75,22 @@ public final class Method extends Executable {
     private byte[]              annotations;
     private byte[]              parameterAnnotations;
     private byte[]              annotationDefault;
-    private volatile MethodAccessor methodAccessor;
+	/**
+	 * 其实 Method.invoke 方法就是调用 methodAccessor 的 invoke 方法，methodAccessor 这个属性如果 root Method
+	 * 本身已经有了，那就直接用 root Method 的 methodAccessor 赋值过来，否则的话就创建一个
+	 */
+	private volatile MethodAccessor methodAccessor;
     // For sharing of MethodAccessors. This branching structure is
     // currently only two levels deep (i.e., one root Method and
     // potentially many Method objects pointing to it.)
     //
     // If this branching structure would ever contain cycles, deadlocks can
     // occur in annotation code.
-    private Method              root;
+	/**
+	 * 主要指向缓存里的 Method对 象，也就是当前这个 Method 对象其实是根据 root 这个 Method 构建出来的，
+	 * 因此存在一个 root Method 派生出多个 Method 的情况。
+	 */
+    private Method root;
 
     // Generics infrastructure
     private String getGenericSignature() {return signature;}

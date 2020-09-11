@@ -115,6 +115,9 @@ import sun.reflect.misc.ReflectUtil;
  * @author  unascribed
  * @see     java.lang.ClassLoader#defineClass(byte[], int, int)
  * @since   JDK1.0
+ * 有Declared修饰的方法：可以获取该类内部包含的所有变量、方法和构造器，但是无法获取继承下来的信息
+ *
+ * 无Declared修饰的方法：可以获取该类中public修饰的变量、方法和构造器，可获取继承下来的信息
  */
 public final class Class<T> implements java.io.Serializable,
                               GenericDeclaration,
@@ -1550,6 +1553,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since JDK1.1
      * @jls 8.2 Class Members
      * @jls 8.3 Field Declarations
+	 * 获取类中所有被 public 修饰的所有变量，可获取继承下来的信息
      */
     @CallerSensitive
     public Field[] getFields() throws SecurityException {
@@ -1608,6 +1612,7 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.2 Class Members
      * @jls 8.4 Method Declarations
      * @since JDK1.1
+	 * 获取类中被 public 修饰的所有方法，可获取继承下来的信息
      */
     @CallerSensitive
     public Method[] getMethods() throws SecurityException {
@@ -1909,6 +1914,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since JDK1.1
      * @jls 8.2 Class Members
      * @jls 8.3 Field Declarations
+	 * 获取类中所有的变量，但无法获取继承下来的变量，但是无法获取继承下来的信息
      */
     @CallerSensitive
     public Field[] getDeclaredFields() throws SecurityException {
@@ -1968,6 +1974,7 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.2 Class Members
      * @jls 8.4 Method Declarations
      * @since JDK1.1
+	 * 获取所有方法，但无法获取继承下来的方法
      */
     @CallerSensitive
     public Method[] getDeclaredMethods() throws SecurityException {
@@ -2120,6 +2127,9 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.2 Class Members
      * @jls 8.4 Method Declarations
      * @since JDK1.1
+	 * 根据名字和参数类型获取对应方法，无法获取继承下来的方法
+	 * 从 privateGetDeclaredMethods 返回的方法列表里通过 searchMethods 复制一个Method对象返回。
+	 * 每次调用其实返回的是一个新的 Method 对象
      */
     @CallerSensitive
     public Method getDeclaredMethod(String name, Class<?>... parameterTypes)
@@ -2461,6 +2471,7 @@ public final class Class<T> implements java.io.Serializable,
     private static boolean useCaches = true;
 
     // reflection data that might get invalidated when JVM TI RedefineClasses() is called
+	// 主要存的是每次从 jvm 里获取到的一些类属性，比如方法，字段等，这个属性主要是 SoftReference (也就是在某些内存比较苛刻的情况下是可能被回收的)
     private static class ReflectionData<T> {
         volatile Field[] declaredFields;
         volatile Field[] publicFields;
@@ -3010,6 +3021,7 @@ public final class Class<T> implements java.io.Serializable,
                 res = m;
         }
 
+        // 底层调用的是 Method.copy()
         return (res == null ? res : getReflectionFactory().copyMethod(res));
     }
 
