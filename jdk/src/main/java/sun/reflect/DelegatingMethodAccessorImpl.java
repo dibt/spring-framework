@@ -36,7 +36,11 @@ class DelegatingMethodAccessorImpl extends MethodAccessorImpl {
     DelegatingMethodAccessorImpl(MethodAccessorImpl delegate) {
         setDelegate(delegate);
     }
-
+	
+	/**
+	 * 其中 DelegatingMethodAccessorImpl 是最终注入给 Method 的 methodAccessor 的，也就是某个 Method 的所有的 invoke
+	 * 方法都会调用到这个 DelegatingMethodAccessorImpl.invoke
+	 */
     public Object invoke(Object obj, Object[] args)
         throws IllegalArgumentException, InvocationTargetException
     {

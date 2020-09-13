@@ -75,10 +75,7 @@ public final class Method extends Executable {
     private byte[]              annotations;
     private byte[]              parameterAnnotations;
     private byte[]              annotationDefault;
-	/**
-	 * 其实 Method.invoke 方法就是调用 methodAccessor 的 invoke 方法，methodAccessor 这个属性如果 root Method
-	 * 本身已经有了，那就直接用 root Method 的 methodAccessor 赋值过来，否则的话就创建一个
-	 */
+
 	private volatile MethodAccessor methodAccessor;
     // For sharing of MethodAccessors. This branching structure is
     // currently only two levels deep (i.e., one root Method and
@@ -487,6 +484,11 @@ public final class Method extends Executable {
      *              and the method is an instance method.
      * @exception ExceptionInInitializerError if the initialization
      * provoked by this method fails.
+	 *
+	 * 其实 Method.invoke 方法就是调用 methodAccessor 的 invoke 方法，methodAccessor 这个属性如果 root Method
+	 * 本身已经有了，那就直接用 root Method 的 methodAccessor 赋值过来，否则的话就创建一个
+	 * 但是最终调用的是 DelegatingMethodAccessorImpl.invoke
+	 *
      */
     @CallerSensitive
     public Object invoke(Object obj, Object... args)
