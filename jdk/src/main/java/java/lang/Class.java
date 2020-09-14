@@ -115,6 +115,22 @@ import sun.reflect.misc.ReflectUtil;
  * @author  unascribed
  * @see     java.lang.ClassLoader#defineClass(byte[], int, int)
  * @since   JDK1.0
+ * 反射
+ * 首先获取类的 Class 对象
+ * 1、类名.class
+ * 2、实例.getClass()
+ * 3、Class.forName(className)
+ * JVM 帮我们保证了一个类在内存中至多存在一个 Class 对象
+ * 构造类的实例化对象
+ * 获取一个类的所有信息
+ * 反射的应用
+ * 1、Spring 实例化对象
+ * 2、反射 + 工厂模式：通过反射消除工厂中的多个分支，如果需要生产新的类，无需关注工厂
+ * 3、JDBC连接数据库：使用JDBC连接数据库时，指定连接数据库的驱动类时用到反射加载驱动类
+ * 反射的优缺点
+ * 优点：增加程序的灵活性
+ * 缺点：破坏类的封装性、性能损耗：反射相比直接实例化对象、调用方法、访问变量，中间需要非常多的检查步骤和解析步骤，JVM无法对它们优化
+ *
  * 有Declared修饰的方法：可以获取该类内部包含的所有变量、方法和构造器，但是无法获取继承下来的信息
  *
  * 无Declared修饰的方法：可以获取该类中public修饰的变量、方法和构造器，可获取继承下来的信息
