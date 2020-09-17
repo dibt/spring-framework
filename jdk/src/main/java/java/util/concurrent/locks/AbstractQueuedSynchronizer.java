@@ -449,7 +449,7 @@ public abstract class AbstractQueuedSynchronizer
          * The field is initialized to 0 for normal sync nodes, and
          * CONDITION for condition nodes.  It is modified using CAS
          * (or when possible, unconditional volatile writes).
-		 * 等待状态
+		 * 当前节点在队列中的状态
          */
         volatile int waitStatus;
 
@@ -1592,6 +1592,13 @@ public abstract class AbstractQueuedSynchronizer
         Node t = tail; // Read fields in reverse initialization order
         Node h = head;
         Node s;
+        // 双向链表中，第一个节点为虚节点，其实并不存储任何信息，只是占位。真正的第一个有数据的节点，是在第二个节点开始的。当h != t时：
+		// a. 如果(s = h.next) == null，等待队列正在有线程进行初始化，但只是进行到了Tail指向Head，没有将Head指向Tail，
+		// 此时队列中有元素，需要返回True
+		// b. 如果(s = h.next) != null，说明此时队列中至少有一个有效节点。如果此时s.thread == Thread.currentThread()
+		// ，说明等待队列的第一个有效节点中的线程与当前线程相同，那么当前线程是可以获取资源的；
+		// 如果s.thread != Thread.currentThread()，说明等待队列的第一个有效节点线程与当前线程不同，
+		// 当前线程必须加入进等待队列。
         return h != t &&
             ((s = h.next) == null || s.thread != Thread.currentThread());
     }
