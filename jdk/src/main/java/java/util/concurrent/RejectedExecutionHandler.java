@@ -40,6 +40,7 @@ package java.util.concurrent;
  *
  * @since 1.5
  * @author Doug Lea
+ *
  */
 public interface RejectedExecutionHandler {
 

@@ -90,6 +90,7 @@ public abstract class AbstractQueue<E>
      *         this queue does not permit null elements
      * @throws IllegalArgumentException if some property of this element
      *         prevents it from being added to this queue
+	 *  对于有界队列来说，当对列已满，add 会直接抛出 IllegalStateException 异常
      */
     public boolean add(E e) {
         if (offer(e))

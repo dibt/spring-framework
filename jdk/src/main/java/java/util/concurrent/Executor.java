@@ -124,6 +124,7 @@ package java.util.concurrent;
  *
  * @since 1.5
  * @author Doug Lea
+ * 将任务提交和任务执行进行解耦，用户只需要提供 Runnable 对象即可，至于线程如何创建、如何调度线程执行任务等无需关注
  */
 public interface Executor {
 

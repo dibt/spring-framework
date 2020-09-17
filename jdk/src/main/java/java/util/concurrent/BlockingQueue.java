@@ -195,6 +195,8 @@ public interface BlockingQueue<E> extends Queue<E> {
      * @throws NullPointerException if the specified element is null
      * @throws IllegalArgumentException if some property of the specified
      *         element prevents it from being added to this queue
+	 * 向队列中添加元素
+	 * 对于有界队列来说，当对列已满，add 会直接抛出 IllegalStateException 异常
      */
     boolean add(E e);
 
@@ -214,6 +216,8 @@ public interface BlockingQueue<E> extends Queue<E> {
      * @throws NullPointerException if the specified element is null
      * @throws IllegalArgumentException if some property of the specified
      *         element prevents it from being added to this queue
+	 * 向队列中添加元素
+	 * 对于有界队列来说，当对列已满，offer 会直接返回 false
      */
     boolean offer(E e);
 
@@ -228,6 +232,7 @@ public interface BlockingQueue<E> extends Queue<E> {
      * @throws NullPointerException if the specified element is null
      * @throws IllegalArgumentException if some property of the specified
      *         element prevents it from being added to this queue
+	 * 对于有界队列来说，当对列已满，put 会阻塞
      */
     void put(E e) throws InterruptedException;
 
@@ -258,6 +263,7 @@ public interface BlockingQueue<E> extends Queue<E> {
      *
      * @return the head of this queue
      * @throws InterruptedException if interrupted while waiting
+	 * 移除并返回队列头部的元素
      */
     E take() throws InterruptedException;
 
@@ -272,6 +278,7 @@ public interface BlockingQueue<E> extends Queue<E> {
      * @return the head of this queue, or {@code null} if the
      *         specified waiting time elapses before an element is available
      * @throws InterruptedException if interrupted while waiting
+	 * 移除并返问队列头部的元素，如果队列为空，则返回 null
      */
     E poll(long timeout, TimeUnit unit)
         throws InterruptedException;
@@ -306,6 +313,7 @@ public interface BlockingQueue<E> extends Queue<E> {
      *         (<a href="../Collection.html#optional-restrictions">optional</a>)
      * @throws NullPointerException if the specified element is null
      *         (<a href="../Collection.html#optional-restrictions">optional</a>)
+	 * 移除并返问队列头部的元素，如果队列为空，则抛出 NoSuchElementException 异常
      */
     boolean remove(Object o);
 

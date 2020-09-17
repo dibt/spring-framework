@@ -326,6 +326,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E>
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
+        	// 对于有界队列来说，当对列已满，offer 直接返回 false
             if (count == items.length)
                 return false;
             else {
