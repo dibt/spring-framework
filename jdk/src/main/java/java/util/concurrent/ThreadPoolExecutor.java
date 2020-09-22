@@ -1178,6 +1178,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
                     beforeExecute(wt, task);
                     Throwable thrown = null;
                     try {
+                    	// submit 提交的任务被二次封装为 FutureTask，具体的逻辑在 FutureTask#run 方法
                         task.run();
                     } catch (RuntimeException x) {
                         thrown = x; throw x;

@@ -1051,11 +1051,13 @@ class ThreadGroup implements Thread.UncaughtExceptionHandler {
         if (parent != null) {
             parent.uncaughtException(t, e);
         } else {
+        	// 默认的 Thread.UncaughtExceptionHandler
             Thread.UncaughtExceptionHandler ueh =
                 Thread.getDefaultUncaughtExceptionHandler();
             if (ueh != null) {
                 ueh.uncaughtException(t, e);
             } else if (!(e instanceof ThreadDeath)) {
+            	// 平常控制台的异常输出日志就是这里打印出去的
                 System.err.print("Exception in thread \""
                                  + t.getName() + "\" ");
                 e.printStackTrace(System.err);

@@ -1945,6 +1945,7 @@ class Thread implements Runnable {
      * @see #setDefaultUncaughtExceptionHandler
      * @see ThreadGroup#uncaughtException
      * @since 1.5
+	 * 设置自定义 UncaughtExceptionHandler
      */
     public void setUncaughtExceptionHandler(UncaughtExceptionHandler eh) {
         checkAccess();
@@ -1954,6 +1955,11 @@ class Thread implements Runnable {
     /**
      * Dispatch an uncaught exception to the handler. This method is
      * intended to be called only by the JVM.
+	 * 当线程因未捕获异常而终止时，JVM 会调用这个方法去传递相关异常信息
+	 * UncaughtExceptionHandler#uncaughtException
+	 * 如果没有设置 UncaughtExceptionHandler ，则将其 ThreadGroup 对象作为其 Handler，即会调用
+	 * ThreadGroup#uncaughtException
+	 *
      */
     private void dispatchUncaughtException(Throwable e) {
         getUncaughtExceptionHandler().uncaughtException(this, e);
