@@ -240,16 +240,30 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		this.earlyProxyReferences.put(cacheKey, bean);
 		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
+	
+	/**
+	 * Bean 实例化前 -- 区分 BeanPostProcessor 初始化的前置处理器 postProcessBeforeInitialization
+	 * InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
+	 * postProcessBeforeInstantiation 方法主要对当前类进行一些判断：
+	 *
+	 * 判断当前 bean 是否在 advisedBeans（增强 bean 的集合）中----增强 bean 是指切入点表达式包含的类。
+	 * 判断当前 bean 是否是基础类型的 Advice、Pointcut、Advisor、AopInfrastructureBean，或者是否是切面（@Aspect）
+	 * 是否需要跳过----获取候选的增强器（切面里面的通知方法）【List<Advisor> candidateAdvisors】，如果增强器是 AspectJPointcutAdvisor
+	 * 类型的，则返回true（封装的通知方法的增强器是 InstantiationModelAwarePointcutAdvisor类型）
+	 *
+	 */
 
-	// Bean 初始化前
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
+			// 判断当前 bean 是否在 advisedBeans 中（advisedBeans保存了所有需要增强的bean）
 			if (this.advisedBeans.containsKey(cacheKey)) {
 				return null;
 			}
+			// 判断当前 bean 是否基础类型 Advice、Pointcut、Advisor、AopInfrastructureBean，或是否切面（@Aspect）
+			// 是否需要跳过
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
 				return null;
@@ -292,13 +306,14 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * Create a proxy with the configured interceptors if the bean is
 	 * identified as one to proxy by the subclass.
 	 * @see #getAdvicesAndAdvisorsForBean
-	 * Bean 初始化后
+	 * BeanPostProcessor 后置处理器 -- Bean 初始化后
 	 */
 	@Override
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
 		if (bean != null) {
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
+				// 动态增强，生成动态代理
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
 		}
@@ -347,9 +362,12 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 
 		// Create proxy if we have advice.
+		// 获取当前 bean 的所有增强器
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {
+			// 将当前 bean 放入 advisedBeans 中
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
+			// 创建增强 bean 的代理对象
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
 			this.proxyTypes.put(cacheKey, proxy.getClass());

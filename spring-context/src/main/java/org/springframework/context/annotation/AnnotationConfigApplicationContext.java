@@ -81,10 +81,14 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * from the given annotated classes and automatically refreshing the context.
 	 * @param annotatedClasses one or more annotated classes,
 	 * e.g. {@link Configuration @Configuration} classes
+	 * 创建 Ioc 容器，传入配置类
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
+		// 调用无参构造创建对象
 		this();
+		// 注册配置类
 		register(annotatedClasses);
+		// 刷新容器，初始化容器创建需要的bean，调用 AbstractApplicationContext#refresh
 		refresh();
 	}
 

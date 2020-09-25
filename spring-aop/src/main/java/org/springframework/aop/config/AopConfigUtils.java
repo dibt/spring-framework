@@ -140,6 +140,8 @@ public abstract class AopConfigUtils {
 		// 此处注意，增加了一个属性：最高优先级执行，后面会和 @Async 注解一起使用的时候起关键作用
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		// 将beanDefinition注册进registry中,注册名为 AUTO_PROXY_CREATOR_BEAN_NAME
+		// AUTO_PROXY_CREATOR_BEAN_NAME = internalAutoProxyCreator
 		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
 		return beanDefinition;
 	}
