@@ -559,7 +559,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		// 缓存没有命中的话就创建实例，返回的是一个 instanceWrapper，把一个空的 Java POJO 给到 instanceWrapper， 还没有完成相关属性的设置和相关的初始化
 		if (instanceWrapper == null) {
-			// 构造器循环依赖在这里会出现死循环
+			// 调用对象的构造器方法实例化对象
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 		final Object bean = instanceWrapper.getWrappedInstance();
@@ -595,7 +595,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 			// 暴露创建单例对象所使用的 BeanFactory 添加到三级缓存中
 			// 属性注入添加缓存操作
-			// 在将三级缓存放入二级缓存的时候，会判断是否有SmartInstantiationAwareBeanPostProcessor这样的后置处理器，换句话说这里是给用户提供接口扩展的，所以采用了三级缓存
+			// 会判断是否有SmartInstantiationAwareBeanPostProcessor这样的后置处理器，换句话说这里是给用户提供接口扩展的，所以采用了三级缓存
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -1201,7 +1201,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		if (resolved) {
 			if (autowireNecessary) {
-				// 构造器注入
+				
 				return autowireConstructor(beanName, mbd, null, null);
 			}
 			else {
@@ -1213,6 +1213,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
+			// 构造器注入
 			return autowireConstructor(beanName, mbd, ctors, args);
 		}
 

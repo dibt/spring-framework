@@ -100,9 +100,18 @@ AbstractAutowireCapableBeanFactory#createBean -> AbstractAutowireCapableBeanFact
 AbstractAutowireCapableBeanFactory#populateBean -> AbstractAutowireCapableBeanFactory#applyPropertyValues -> 
 BeanDefinitionValueResolver#resolveValueIfNecessary -> BeanDefinitionValueResolver#resolveReference -> 
 **AbstractApplicationContext#getBean**
-
+- 思考
+  - spring 为什么解决不了构造器循环依赖  
+    1、正在实例化的 bean 会放入到 DefaultSingletonBeanRegistry# singletonsCurrentlyInCreation 进行缓存，在创建 bean 实例之前会先检查这个缓存  
+    2、在将 BeanFactory **放入到三级缓存之前**会先调用 bean 的构造方法进行实例化，所以不能解决构造器循环依赖
+    AbstractAutowireCapableBeanFactory#createBeanInstance -> AbstractAutowireCapableBeanFactory#autowireConstructor 
+    -> ConstructorResolver#autowireConstructor -> ConstructorResolver#resolveConstructorArguments -> 
+    BeanDefinitionValueResolver#resolveValueIfNecessary -> (RuntimeBeanReference) 
+    BeanDefinitionValueResolver#resolveReference-> BeanFactory#getBean  
+  - spring 解决循环依赖为什么要用三级缓存
 ### ThreadLocal  
   - InheritableThreadLocal 父子线程之间传递参数，入口为 Thread#init
+### 
   
 
                                              
