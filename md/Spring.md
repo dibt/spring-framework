@@ -108,7 +108,8 @@ BeanDefinitionValueResolver#resolveValueIfNecessary -> BeanDefinitionValueResolv
     -> ConstructorResolver#autowireConstructor -> ConstructorResolver#resolveConstructorArguments -> 
     BeanDefinitionValueResolver#resolveValueIfNecessary -> (RuntimeBeanReference) 
     BeanDefinitionValueResolver#resolveReference-> BeanFactory#getBean  
-  - spring 解决循环依赖为什么要用三级缓存
+  - spring 解决循环依赖为什么要用三级缓存  
+    - [Spring 解决循环依赖为什么使用三级缓存，而不是二级缓存](https://www.cnblogs.com/grey-wolf/p/13034371.html)
 ### ThreadLocal  
   - InheritableThreadLocal 父子线程之间传递参数，入口为 Thread#init
 ### 
