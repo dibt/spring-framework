@@ -562,6 +562,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 调用对象的构造器方法实例化对象
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
+		// 此处 bean 是原始对象(非代理对象)
 		final Object bean = instanceWrapper.getWrappedInstance();
 		Class<?> beanType = instanceWrapper.getWrappedClass();
 		if (beanType != NullBean.class) {
@@ -594,8 +595,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 						"' to allow for resolving potential circular references");
 			}
 			// 暴露创建单例对象所使用的 BeanFactory 添加到三级缓存中
-			// 属性注入添加缓存操作
-			// 会判断是否有SmartInstantiationAwareBeanPostProcessor这样的后置处理器，换句话说这里是给用户提供接口扩展的，所以采用了三级缓存
+			// 若不需要执行 AOP 的逻辑，直接返回 Bean
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -605,6 +605,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// Bean 属性赋值操作
 			// 属性注入递归调用，解决循环依赖
 			populateBean(beanName, mbd, instanceWrapper);
+			// 执行初始化回调方法 BeanPostProcessor#postProcessBeforeInitialization 和 postProcessAfterInitialization
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -617,25 +618,34 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
+		// 如果你的 bean 允许被早期暴露出去，也就是说可以被循环引用，那这里就会进行检查
 		if (earlySingletonExposure) {
 			// 第二参数为false  表示不会再去三级缓存里查了
 			// 此处非常巧妙的一点：因为上面各式各样的实例化、初始化的后置处理器都执行了，如果你在上面执行了这一句
 			// ((ConfigurableListableBeanFactory)this.beanFactory).registerSingleton(beanName, bean);
+			// DefaultSingletonBeanRegistry#registerSingleton
 			// 那么此处得到的earlySingletonReference 的引用最终会是你手动放进去的 Bean 最终返回，特别适合中间件的设计
 			Object earlySingletonReference = getSingleton(beanName, false);
 			if (earlySingletonReference != null) {
+				// 这个条件要看 initializeBean 调用后置处理器，有没有生成一个代理对象(如果没有生成代理对象，直接返回二级缓存里的引用 earlySingletonReference)
 				if (exposedObject == bean) {
+					// exposedObject 被替换成 AOP 增强过后的代理对象或者原始对象(也就是二级缓存里的引用)
 					exposedObject = earlySingletonReference;
 				}
-				// initializeBean 会调用后置处理器，这个时候可以生成一个代理对象，那这个时候走这里的逻辑
+				// allowRawInjectionDespiteWrapping 这个值默认是 false
+				// initializeBean 调用后置处理器，如果生成代理对象，那这个时候走这里的逻辑
 				else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
+					// 获取所有依赖的 bean
 					String[] dependentBeans = getDependentBeans(beanName);
 					Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
 					for (String dependentBean : dependentBeans) {
+						// 获取真的需要依赖它先实例化，才能实例化自己的依赖
 						if (!removeSingletonIfCreatedForTypeCheckOnly(dependentBean)) {
 							actualDependentBeans.add(dependentBean);
 						}
 					}
+					
+					// 若存在真正依赖，直接抛异常
 					if (!actualDependentBeans.isEmpty()) {
 						throw new BeanCurrentlyInCreationException(beanName,
 								"Bean with name '" + beanName + "' has been injected into other beans [" +
@@ -1798,7 +1808,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #applyBeanPostProcessorsBeforeInitialization
 	 * @see #invokeInitMethods
 	 * @see #applyBeanPostProcessorsAfterInitialization
-	 * 这个方法依次完成了以下四个操作 Aware接口回调 -> BeanPostProcessorsBeforeInitialization（初始化前） -> InitMethods（初始化方法） ->
+	 * 这个方法依次完成了以下四个操作
+	 * Aware接口回调 -> BeanPostProcessorsBeforeInitialization（初始化前） -> InitMethods（初始化方法） ->
 	 * BeanPostProcessorsAfterInitialization（初始化后）
 	 */
 	protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
@@ -1816,7 +1827,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
 			// 实例化前置操作 BeanPostProcessor
-			// Bean 初始化前注解 PostConstruct 的处理逻辑和 应用上下文接口的 Aware 回调操作是在 BeanPostProcessorsBeforeInitialization 实现的
+			// Bean 初始化前注解 PostConstruct 的处理逻辑(CommonAnnotationBeanPostProcessor#postProcessBeforeInitialization)和
+			// 应用上下文接口的 Aware 回调操作是在 BeanPostProcessorsBeforeInitialization 实现的(ApplicationContextAwareProcessor#postProcessBeforeInitialization)
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 

@@ -195,6 +195,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					// 从三级缓存中查询，实例化完成，属性未装配完成
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
+						// 为什么要用三级缓存，原因就是在放 singletonFactory
+						// 到三级缓存的时候调用了 AbstractAutowireCapableBeanFactory#getEarlyBeanReference
+						// 如果有 AOP 增强的话这里直接获取代理对象
 						singletonObject = singletonFactory.getObject();
 						// 二级缓存中添加
 						this.earlySingletonObjects.put(beanName, singletonObject);
