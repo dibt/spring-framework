@@ -135,6 +135,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see CountDownLatch
  *
  * @author Doug Lea
+ * CyclicBarrier叫做回环屏障，它的作用是让一组线程全部达到一个状态之后再全部同时执行，而且有一个特点就是所有线程执行完毕之后是可以重用的。
+ *
+ * CyclicBarrier还是基于AQS实现的，内部维护parties记录总线程数，count用于计数，最开始count=parties，调用await()之后count原子递减，当count为0之后，再次将parties赋值给count，这就是复用的原理。
+ *
+ * 1、当子线程调用await()方法时，获取独占锁，同时对count递减，进入阻塞队列，然后释放锁
+ * 2、当第一个线程被阻塞同时释放锁之后，其他子线程竞争获取锁，操作同1
+ * 3、直到最后count为0，执行CyclicBarrier构造函数中的任务，执行完毕之后子线程继续向下执行
  */
 public class CyclicBarrier {
     /**

@@ -84,6 +84,7 @@ public class Executors {
      * @param nThreads the number of threads in the pool
      * @return the newly created thread pool
      * @throws IllegalArgumentException if {@code nThreads <= 0}
+	 * 固定线程数量的线程池
      */
     public static ExecutorService newFixedThreadPool(int nThreads) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -166,6 +167,7 @@ public class Executors {
      * guaranteed not to be reconfigurable to use additional threads.
      *
      * @return the newly created single-threaded Executor
+	 * 单线程线程池
      */
     public static ExecutorService newSingleThreadExecutor() {
         return new FinalizableDelegatedExecutorService
@@ -211,6 +213,7 @@ public class Executors {
      * may be created using {@link ThreadPoolExecutor} constructors.
      *
      * @return the newly created thread pool
+	 * 创建一个线程池，如果线程池中的线程数量过大，它可以有效的回收多余的线程，如果线程数不足，那么它可以创建新的线程。
      */
     public static ExecutorService newCachedThreadPool() {
         return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
@@ -280,6 +283,7 @@ public class Executors {
      * even if they are idle
      * @return a newly created scheduled thread pool
      * @throws IllegalArgumentException if {@code corePoolSize < 0}
+	 * 该线程池支持定时，以及周期性的任务执行，我们可以延迟任务的执行时间，也可以设置一个周期性的时间让任务重复执行。
      */
     public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
         return new ScheduledThreadPoolExecutor(corePoolSize);

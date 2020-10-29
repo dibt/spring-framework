@@ -554,6 +554,9 @@ public class ScheduledThreadPoolExecutor
      * @throws RejectedExecutionException {@inheritDoc}
      * @throws NullPointerException       {@inheritDoc}
      * @throws IllegalArgumentException   {@inheritDoc}
+	 * 如果间隔时间大于任务的执行时间，任务不受执行时间的影响。如果间隔时间小于任务的执行时间，那么任务执行结束之后，会立马执行，至此间隔时间就会被打乱。
+	 * initialDelay  第一次执行任务延迟时间
+	 * period 连续执行任务之间的周期，从上一个任务开始执行时计算延迟多少开始执行下一个任务，但是还会等上一个任务结束之后。
      */
     public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,
                                                   long initialDelay,
@@ -578,6 +581,9 @@ public class ScheduledThreadPoolExecutor
      * @throws RejectedExecutionException {@inheritDoc}
      * @throws NullPointerException       {@inheritDoc}
      * @throws IllegalArgumentException   {@inheritDoc}
+	 *
+	 * initialDelay CyclicBarrier
+	 * delay 连续执行任务之间的周期，从上一个任务全部执行完成时计算延迟多少开始执行下一个任务
      */
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
                                                      long initialDelay,

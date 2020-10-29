@@ -152,6 +152,13 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
  *
  * @since 1.5
  * @author Doug Lea
+ * CountDownLatch适用于在多线程的场景需要等待所有子线程全部执行完毕之后再做操作的场景，不可重复使用
+ *
+ * CountDownLatch基于AQS实现，volatile变量state维持倒数状态，多线程共享变量可见。
+ *
+ * 1、CountDownLatch通过构造函数初始化传入参数实际为AQS的state变量赋值，维持计数器倒数状态
+ * 2、当主线程调用await()方法时，当前线程会被阻塞，当state不为0时进入AQS阻塞队列等待。
+ * 3、其他线程调用countDown()时，state值原子性递减，当state值为0的时候，唤醒所有调用await()方法阻塞的线程
  */
 public class CountDownLatch {
     /**

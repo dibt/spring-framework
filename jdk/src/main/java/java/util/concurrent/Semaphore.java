@@ -152,6 +152,10 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
  *
  * @since 1.5
  * @author Doug Lea
+ * Semaphore还还还是基于AQS实现的，同时获取信号量有公平和非公平两种策略
+ *
+ * 1、主线程调用acquire()方法时，用当前信号量值-需要获取的值，如果小于0，则进入同步阻塞队列，大于0则通过CAS设置当前信号量为剩余值，同时返回剩余值
+ * 2、子线程调用release()给当前信号量值计数器+1(增加的值数量由传参决定)，同时不停的尝试唤醒因为调用acquire()进入阻塞的线程
  */
 public class Semaphore implements java.io.Serializable {
     private static final long serialVersionUID = -3222578661600680210L;
