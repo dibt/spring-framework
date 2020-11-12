@@ -62,15 +62,16 @@ acquireMethodAccessor 方法中，会通过 ReflectionFactory#newMethodAccessor 
 noInflation 为 false，方法 newMethodAccessor 都会返回 MethodAccessorImpl  的一个子类对象，并设置到 DelegatingMethodAccessorImpl 对象里去。  
 其实 DelegatingMethodAccessorImpl 
 对象就是一个代理对象，负责调用被代理对象 delegate 的 invoke 方法，其中 delegate 参数目前是 NativeMethodAccessorImpl 对象，
- <font color=red>**所以最终
+ **所以最终
  Method 的 invoke 
-方法调用的是 NativeMethodAccessorImpl 对象 invoke 方法**</font>，这里用到了 
+方法调用的是 NativeMethodAccessorImpl 对象 invoke 方法**，这里用到了 
 ReflectionFactory 类中的 inflationThreshold，当 delegate 调用了15次 invoke 方法之后，如果继续调用就通过 MethodAccessorGenerator 
 类的 generateMethod 
-方法生成 MethodAccessorImpl 对象，并设置为 delegate 对象，这样下次执行 Method.invoke 时，就调用新建的 MethodAccessor 对象的 invoke 方法了。
-** 这里需要注意的是：generateMethod 方法在生成 MethodAccessorImpl 对象时，会在内存中生成对应的字节码，并调用 ClassDefiner.defineClass 创建对应的 class 对象，在 
+方法生成 MethodAccessorImpl 对象，并设置为 delegate 对象，这样下次执行 Method.invoke 时，就调用新建的 MethodAccessor 对象的 invoke 方法了。  
+
+  **这里需要注意的是：generateMethod 方法在生成 MethodAccessorImpl 对象时，会在内存中生成对应的字节码，并调用 ClassDefiner.defineClass 创建对应的 class 对象，在 
 ClassDefiner.defineClass 方法实现中，每被调用一次都会生成一个 DelegatingClassLoader 
-类加载器对象，这里每次都生成新的类加载器，是为了性能考虑，在某些情况下可以卸载这些生成的类，因为类的卸载是只有在类加载器可以被回收的情况下才会被回收的，如果用了原来的类加载器，那可能导致这些新创建的类一直无法被卸载 **
+类加载器对象，这里每次都生成新的类加载器，是为了性能考虑，在某些情况下可以卸载这些生成的类，因为类的卸载是只有在类加载器可以被回收的情况下才会被回收的，如果用了原来的类加载器，那可能导致这些新创建的类一直无法被卸载**
 ### CGLib动态代理  
 CGLIB（Code Generation Library），是一个代码生成的类库，可以在运行时动态的生成某个类的子类，注意，CGLIB是通过继承的方式做的动态代理，因此如果某个类被标记为final，那么它是无法使用CGLIB做动态代理的。
 
