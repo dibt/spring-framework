@@ -26,6 +26,7 @@ Proxy#ProxyClassFactory -> ProxyGenerator.generateProxyClass -> Proxy#defineClas
 
 #### Java 方法反射的实现原理
 
+Class.getDeclaredMethod 调用链  
 Class#getDeclaredMethod -->  Class#searchMethods -->  Class#privateGetDeclaredMethods  
 
 - searchMethods 方法将从返回的方法列表里找到一个匹配名称和参数的方法对象。
@@ -41,25 +42,29 @@ searchMethods -> Method#copy 所以每次调用 getDeclaredMethod 方法返回�
   - 在 privateGetDeclaredMethods 方法中，如果通过 reflectionData 获得的 ReflectionData 对象不为空，则尝试从 ReflectionData 对象中获取 declaredMethods 
 属性，如果是第一次，或则被GC回收之后，重新初始化后的类属性为空，则需要重新到 JVM 中获取一次，并赋值给 ReflectionData，下次调用就可以使用缓存数据了。  
 
+Method.invoke 调用链  
 Method#invoke -->  MethodAccessor#invoke -->  ReflectionFactory.newMethodAccessor --> NativeMethodAccessorImpl#invoke
- --> MethodAccessorGenerator#generateMethod --> MethodAccessorGenerator#generate --> ClassDefiner#defineClass
+ --> MethodAccessorGenerator#generateMethod --> MethodAccessorGenerator#generate --> ClassDefiner#defineClass --> new
+  DelegatingClassClassLoader
 
 - Method#invoke 这里的 MethodAccessor 对象是 invoke 方法实现的关键，一开始 methodAccessor 
 为空，需要调用 acquireMethodAccessor 生成一个新的 MethodAccessor 对象，在 
 acquireMethodAccessor 方法中，会通过 ReflectionFactory#newMethodAccessor 创建一个实现 MethodAccessor 接口的对象，MethodAccessor 
 实现有两个版本  
-- Java 实现的(DelegatingMethodAccessorImpl),Java 实现的版本在初始化时需要较多时间，但长久来说性能较好  
-- native code 实现的(NativeMethodAccessorImpl)  
+  - Java 实现的(DelegatingMethodAccessorImpl),Java 实现的版本在初始化时需要较多时间，但长久来说性能较好  
+  - native code 实现的(NativeMethodAccessorImpl)  
 
-为了权衡两个版本的性能，Sun的JDK使用了inflation的技巧：让Java方法在被反射调用时，开头若干次(ReflectionFactory 的 inflationThreshold 属性，默认为 15)
+  为了权衡两个版本的性能，Sun的JDK使用了inflation的技巧：让Java方法在被反射调用时，开头若干次(ReflectionFactory 的 inflationThreshold 属性，默认为 15)
 使用native版，等反射调用次数超过阈值（15次）时则生成一个专用的 MethodAccessor实现类，生成其中的 invoke() 方法的字节码，以后对该 Java 方法的反射调用就会使用 Java 版。
 
-在 ReflectionFactory 类中，有两个重要的字段：noInflation (默认false)和 inflationThreshold (默认15)，在 checkInitted 方法中可以通过 -Dsun.reflect
+  在 ReflectionFactory 类中，有两个重要的字段：noInflation (默认false)和 inflationThreshold (默认15)，在 checkInitted 方法中可以通过 -Dsun.reflect
 .inflationThreshold=xxx和-Dsun.reflect.noInflation=true 对这两个字段重新设置，而且只会设置一次；如果 
-noInflation 为 false，方法 newMethodAccessor 都会返回 MethodAccessorImpl  的一个子类对象，并设置到 DelegatingMethodAccessorImpl 对象里去了。  
+noInflation 为 false，方法 newMethodAccessor 都会返回 MethodAccessorImpl  的一个子类对象，并设置到 DelegatingMethodAccessorImpl 对象里去。  
 其实 DelegatingMethodAccessorImpl 
-对象就是一个代理对象，负责调用被代理对象 delegate 的 invoke 方法，其中 delegate 参数目前是 NativeMethodAccessorImpl 对象，所以最终 Method 的 invoke 
-方法调用的是 NativeMethodAccessorImpl 对象 invoke 方法，这里用到了 
+对象就是一个代理对象，负责调用被代理对象 delegate 的 invoke 方法，其中 delegate 参数目前是 NativeMethodAccessorImpl 对象，
+ <font color=red>**所以最终
+ Method 的 invoke 
+方法调用的是 NativeMethodAccessorImpl 对象 invoke 方法**</font>，这里用到了 
 ReflectionFactory 类中的 inflationThreshold，当 delegate 调用了15次 invoke 方法之后，如果继续调用就通过 MethodAccessorGenerator 
 类的 generateMethod 
 方法生成 MethodAccessorImpl 对象，并设置为 delegate 对象，这样下次执行 Method.invoke 时，就调用新建的 MethodAccessor 对象的 invoke 方法了。
@@ -123,6 +128,11 @@ BeanDefinitionValueResolver#resolveValueIfNecessary -> BeanDefinitionValueResolv
 ### ThreadLocal  
   - InheritableThreadLocal 父子线程之间传递参数，入口为 Thread#init
 ### 
+
+
+
+
+
   
 
                                              
