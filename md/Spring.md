@@ -57,7 +57,7 @@ acquireMethodAccessor 方法中，会通过 ReflectionFactory#newMethodAccessor 
   为了权衡两个版本的性能，Sun的JDK使用了inflation的技巧：让Java方法在被反射调用时，开头若干次(ReflectionFactory 的 inflationThreshold 属性，默认为 15)
 使用native版，等反射调用次数超过阈值（15次）时则生成一个专用的 MethodAccessor实现类，生成其中的 invoke() 方法的字节码，以后对该 Java 方法的反射调用就会使用 Java 版。
 
-  在 ReflectionFactory 类中，有两个重要的字段：noInflation (默认false)和 inflationThreshold (默认15)，在 checkInitted 方法中可以通过 -Dsun.reflect
+  在 ReflectionFactory 类中，有两个重要的字段：noInflation (默认false)和 **inflationThreshold (默认15)**，在 checkInitted 方法中可以通过 -Dsun.reflect
 .inflationThreshold=xxx和-Dsun.reflect.noInflation=true 对这两个字段重新设置，而且只会设置一次；如果 
 noInflation 为 false，方法 newMethodAccessor 都会返回 MethodAccessorImpl  的一个子类对象，并设置到 DelegatingMethodAccessorImpl 对象里去。  
 其实 DelegatingMethodAccessorImpl 
