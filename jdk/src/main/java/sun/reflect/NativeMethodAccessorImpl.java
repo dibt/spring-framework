@@ -42,7 +42,7 @@ class NativeMethodAccessorImpl extends MethodAccessorImpl {
 	
 	/**
 	 * 所有的方法反射都是先走 NativeMethodAccessorImpl，默认调了15次之后，才生成一个 GeneratedMethodAccessorXXX 类,
-	 * GeneratedMethodAccessorXXX 类是由  new MethodAccessorGenerator().generateMethod() 生成的
+	 * GeneratedMethodAccessorXXX 类是由 MethodAccessorGenerator().generateMethod() 生成的
 	 * GeneratedMethodAccessorXXX.invoke 实际上就是直接调用目标对象的具体方法
 	 * 生成好之后就会走这个生成的类的 invoke 方法了
 	 */

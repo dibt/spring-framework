@@ -141,8 +141,14 @@ public class ReflectionFactory {
         checkInitted();
         return UnsafeFieldAccessorFactory.newFieldAccessor(field, override);
     }
-
-    public MethodAccessor newMethodAccessor(Method method) {
+	
+	/**
+	 * 在 ReflectionFactory 类中，有2个重要的字段：noInflation(默认false) 和 inflationThreshold(默认15)，在 checkInitted 方法中可以通过
+	 * -Dsun.reflect.inflationThreshold=xxx 和 -Dsun.reflect.noInflation=true 对这两个字段重新设置，而且只会设置一次
+	 * @param method
+	 * @return
+	 */
+	public MethodAccessor newMethodAccessor(Method method) {
         checkInitted();
 
         if (noInflation && !ReflectUtil.isVMAnonymousClass(method.getDeclaringClass())) {
@@ -154,6 +160,7 @@ public class ReflectionFactory {
                                method.getExceptionTypes(),
                                method.getModifiers());
         } else {
+        	// 如果 noInflation 为 false，最终会调用 NativeMethodAccessorImpl#invoke
             NativeMethodAccessorImpl acc =
                 new NativeMethodAccessorImpl(method);
             DelegatingMethodAccessorImpl res =

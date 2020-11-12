@@ -64,7 +64,10 @@ class MethodAccessorGenerator extends AccessorGenerator {
     MethodAccessorGenerator() {
     }
 
-    /** This routine is not thread-safe */
+    /** This routine is not thread-safe
+	 * 这里需要注意的是：
+	 * generateMethod 方法在生成 MethodAccessorImpl 对象时，会在内存中生成对应的字节码，并调用 ClassDefiner.defineClass 创建对应的 class 对象
+	 * */
     public MethodAccessor generateMethod(Class<?> declaringClass,
                                          String   name,
                                          Class<?>[] parameterTypes,
@@ -394,6 +397,7 @@ class MethodAccessorGenerator extends AccessorGenerator {
             new PrivilegedAction<MagicAccessorImpl>() {
                 public MagicAccessorImpl run() {
                         try {
+							// 这里会在内存中生成对应的字节码，并调用 ClassDefiner.defineClass 创建对应的 class 对象
                         return (MagicAccessorImpl)
                         ClassDefiner.defineClass
                                 (generatedName,

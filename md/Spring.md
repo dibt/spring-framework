@@ -24,24 +24,32 @@ Proxy#newProxyInstance
 - 将 InvocationHandler 实例作为参数，通过构造器创建代理对象  
 Proxy#ProxyClassFactory -> ProxyGenerator.generateProxyClass -> Proxy#defineClass0  
 
-Class#getDeclaredMethod  
-- 其中 privateGetDeclaredMethods 方法从缓存或 JVM 中获取该 Class 中申明的方法列表
+#### Java 方法反射的实现原理
+
+Class#getDeclaredMethod -->  Class#searchMethods -->  Class#privateGetDeclaredMethods  
+
 - searchMethods 方法将从返回的方法列表里找到一个匹配名称和参数的方法对象。
-searchMethods -> Method#copy 所次每次调用 getDeclaredMethod 方法返回的 Method 对象其实都是一个新的对象，且新对象的 root 属性都指向原来的 Method
+searchMethods -> Method#copy 所以每次调用 getDeclaredMethod 方法返回的 Method 对象其实都是一个新的对象，且新对象的 root 属性都指向原来的 Method
 对象，如果需要频繁调用，最好把 Method 对象缓存起来  
 
-privateGetDeclaredMethods 中的数据结构 ReflectionData，用来缓存从JVM中读取类的属性，reflectionData 
+- privateGetDeclaredMethods 方法从缓存或 JVM 中获取该 Class 中申明的方法列表
+
+  - privateGetDeclaredMethods 中的数据结构 ReflectionData，用来缓存从JVM中读取类的属性，reflectionData 
 对象是 SoftReference 类型的，说明在内存紧张时可能会被回收，不过也可以通过 -XX:SoftRefLRUPolicyMSPerMB 参数控制回收的时机，只要发生 GC 就会将其回收，如果 reflectionData 
-被回收之后，又执行了反射方法，那只能通过 newReflectionData 方法重新创建一个这样的对象了，通过 unsafe.compareAndSwapObject 方法重新设置 reflectionData 字段，在 
-privateGetDeclaredMethods 方法中，如果通过 reflectionData 获得的 ReflectionData 对象不为空，则尝试从 ReflectionData 对象中获取 declaredMethods 
+被回收之后，又执行了反射方法，那只能通过 newReflectionData 方法重新创建一个这样的对象了，通过 unsafe.compareAndSwapObject 方法重新设置 reflectionData 字段
+  
+  - 在 privateGetDeclaredMethods 方法中，如果通过 reflectionData 获得的 ReflectionData 对象不为空，则尝试从 ReflectionData 对象中获取 declaredMethods 
 属性，如果是第一次，或则被GC回收之后，重新初始化后的类属性为空，则需要重新到 JVM 中获取一次，并赋值给 ReflectionData，下次调用就可以使用缓存数据了。  
 
-Method#invoke 这里的 MethodAccessor 对象是 invoke 方法实现的关键，一开始 methodAccessor 
+Method#invoke -->  MethodAccessor#invoke -->  ReflectionFactory.newMethodAccessor --> NativeMethodAccessorImpl#invoke
+ --> MethodAccessorGenerator#generateMethod --> MethodAccessorGenerator#generate --> ClassDefiner#defineClass
+
+- Method#invoke 这里的 MethodAccessor 对象是 invoke 方法实现的关键，一开始 methodAccessor 
 为空，需要调用 acquireMethodAccessor 生成一个新的 MethodAccessor 对象，在 
-acquireMethodAccessor 方法中，会通过 ReflectionFactory 类的 newMethodAccessor 创建一个实现 MethodAccessor 接口的对象，MethodAccessor 
+acquireMethodAccessor 方法中，会通过 ReflectionFactory#newMethodAccessor 创建一个实现 MethodAccessor 接口的对象，MethodAccessor 
 实现有两个版本  
-- Java 实现的(DelegatingMethodAccessorImpl),Java实现的版本在初始化时需要较多时间，但长久来说性能较好；  
-- native code实现的(NativeMethodAccessorImpl)  
+- Java 实现的(DelegatingMethodAccessorImpl),Java 实现的版本在初始化时需要较多时间，但长久来说性能较好  
+- native code 实现的(NativeMethodAccessorImpl)  
 
 为了权衡两个版本的性能，Sun的JDK使用了inflation的技巧：让Java方法在被反射调用时，开头若干次(ReflectionFactory 的 inflationThreshold 属性，默认为 15)
 使用native版，等反射调用次数超过阈值（15次）时则生成一个专用的 MethodAccessor实现类，生成其中的 invoke() 方法的字节码，以后对该 Java 方法的反射调用就会使用 Java 版。

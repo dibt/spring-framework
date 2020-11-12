@@ -57,6 +57,7 @@ class ClassDefiner {
         ClassLoader newLoader = AccessController.doPrivileged(
             new PrivilegedAction<ClassLoader>() {
                 public ClassLoader run() {
+                	// 每被调用一次都会生成一个 DelegatingClassLoader 类加载器对象
                         return new DelegatingClassLoader(parentClassLoader);
                     }
                 });

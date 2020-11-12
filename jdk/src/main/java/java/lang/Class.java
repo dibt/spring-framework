@@ -2144,13 +2144,14 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.4 Method Declarations
      * @since JDK1.1
 	 * 根据名字和参数类型获取对应方法，无法获取继承下来的方法
-	 * 从 privateGetDeclaredMethods 返回的方法列表里通过 searchMethods 复制一个Method对象返回。
+	 * 从 privateGetDeclaredMethods 返回的方法列表里通过 searchMethods 复制一个Method对象返回
 	 * 每次调用其实返回的是一个新的 Method 对象
      */
     @CallerSensitive
     public Method getDeclaredMethod(String name, Class<?>... parameterTypes)
         throws NoSuchMethodException, SecurityException {
         checkMemberAccess(Member.DECLARED, Reflection.getCallerClass(), true);
+        // 从返回的方法列表里找到一个匹配名称和参数的方法对象,每次调用 Class#getDeclaredMethod 返回的 Method 对象其实都是一个新的对象
         Method method = searchMethods(privateGetDeclaredMethods(false), name, parameterTypes);
         if (method == null) {
             throw new NoSuchMethodException(getName() + "." + name + argumentTypesToString(parameterTypes));
@@ -2488,6 +2489,7 @@ public final class Class<T> implements java.io.Serializable,
 
     // reflection data that might get invalidated when JVM TI RedefineClasses() is called
 	// 主要存的是每次从 jvm 里获取到的一些类属性，比如方法，字段等，这个属性主要是 SoftReference (也就是在某些内存比较苛刻的情况下是可能被回收的)
+	// 不过也可以通过 -XX:SoftRefLRUPolicyMSPerMB 参数控制回收的时机，只要发生GC就会将其回收
     private static class ReflectionData<T> {
         volatile Field[] declaredFields;
         volatile Field[] publicFields;
@@ -2515,6 +2517,7 @@ public final class Class<T> implements java.io.Serializable,
     private volatile transient int classRedefinedCount = 0;
 
     // Lazily create and cache ReflectionData
+	// 重要的数据结构 ReflectionData
     private ReflectionData<T> reflectionData() {
         SoftReference<ReflectionData<T>> reflectionData = this.reflectionData;
         int classRedefinedCount = this.classRedefinedCount;
@@ -2527,6 +2530,7 @@ public final class Class<T> implements java.io.Serializable,
         }
         // else no SoftReference or cleared SoftReference or stale ReflectionData
         // -> create and replace new instance
+		// 本身 ReflectionData 是软引用，如果 reflectionData 被回收之后，又执行了反射方法，那只能通过 newReflectionData 方法重新创建对象
         return newReflectionData(reflectionData, classRedefinedCount);
     }
 
@@ -2537,6 +2541,7 @@ public final class Class<T> implements java.io.Serializable,
         while (true) {
             ReflectionData<T> rd = new ReflectionData<>(classRedefinedCount);
             // try to CAS it...
+			// 通过 CAS 方法重新设置 reflectionData 字段
             if (Atomic.casReflectionData(this, oldReflectionData, new SoftReference<>(rd))) {
                 return rd;
             }
@@ -2716,9 +2721,11 @@ public final class Class<T> implements java.io.Serializable,
     // Returns an array of "root" methods. These Method objects must NOT
     // be propagated to the outside world, but must instead be copied
     // via ReflectionFactory.copyMethod.
+	// 从缓存或 JVM 中获取该 Class 中申明的方法列表
     private Method[] privateGetDeclaredMethods(boolean publicOnly) {
         checkInitted();
         Method[] res;
+        // 先走缓存，如果是第一次调用或者 ReflectionData 被 GC 回收后，重新初始化后的类属性为空，则需要重新到JVM中获取一次，并赋值给 ReflectionData，下次调用就可以使用缓存数据了
         ReflectionData<T> rd = reflectionData();
         if (rd != null) {
             res = publicOnly ? rd.declaredPublicMethods : rd.declaredMethods;
@@ -3037,7 +3044,7 @@ public final class Class<T> implements java.io.Serializable,
                 res = m;
         }
 
-        // 底层调用的是 Method.copy()
+        // 底层调用的是 Method.copy(),返回的 Method 对象其实都是一个新的对象
         return (res == null ? res : getReflectionFactory().copyMethod(res));
     }
 

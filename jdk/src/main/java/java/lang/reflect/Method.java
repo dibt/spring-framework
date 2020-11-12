@@ -503,6 +503,7 @@ public final class Method extends Executable {
         }
         MethodAccessor ma = methodAccessor;             // read volatile
         if (ma == null) {
+        	// 生成一个新的 MethodAccessor 对象，会通过 ReflectionFactory#newMethodAccessor 创建一个实现 MethodAccessor 接口的对象
             ma = acquireMethodAccessor();
         }
         return ma.invoke(obj, args);
