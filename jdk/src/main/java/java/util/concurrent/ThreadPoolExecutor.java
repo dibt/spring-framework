@@ -947,8 +947,9 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
                 // else CAS failed due to workerCount change; retry inner loop
             }
         }
-
+		// 工作线程是否启动的标识
         boolean workerStarted = false;
+		// 工作线程是否已经添加成功的标识
         boolean workerAdded = false;
         Worker w = null;
         try {
@@ -1403,24 +1404,26 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         int c = ctl.get();
         // 如果workerCount < corePoolSize，则创建并启动一个线程来执行新提交的任务。
         if (workerCountOf(c) < corePoolSize) {
+        	// 创建新线程，执行任务
             if (addWorker(command, true))
                 return;
             c = ctl.get();
         }
         // 如果 workerCount >= corePoolSize && workerCount < maximumPoolSize
         // 检测线程池运行状态，如果不是 RUNNING，则直接拒绝，线程池内的阻塞队列未满，则将任务添加到该阻塞队列中。
-		// offer 对于有界队列来说，当对列已满，offer 会直接返回 false
+		// offer 入队操作 对于有界队列来说，当对列已满，offer 会直接返回 false
         if (isRunning(c) && workQueue.offer(command)) {
             int recheck = ctl.get();
-            // remove 移除并返问队列头部的元素，如果队列为空，则抛出 NoSuchElementException 异常
+            // remove 出队操作 移除并返问队列头部的元素，如果队列为空，则抛出 NoSuchElementException 异常
+			// 任务成功添加到队列以后，再次检查是否需要添加新的线程，因为已存在的线程可能被销毁了
             if (! isRunning(recheck) && remove(command))
             	// 如果线程池不是 RUNNING 并且 remove 失败
                 reject(command);
-            // 线程池内的阻塞队列已满，则创建并启动一个线程去队列中获取任务执行
+            // 如果之前的线程已被销毁完，新建一个线程
             else if (workerCountOf(recheck) == 0)
                 addWorker(null, false);
         }
-        // workerCount >= maximumPoolSize，拒绝策略
+        // workerCount >= maximumPoolSize，试着创建一个新线程,否则拒绝策略
         else if (!addWorker(command, false))
             reject(command);
     }

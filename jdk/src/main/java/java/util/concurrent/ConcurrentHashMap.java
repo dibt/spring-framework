@@ -2456,6 +2456,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         ForwardingNode<K,V> fwd = new ForwardingNode<K,V>(nextTab);
         boolean advance = true;
         boolean finishing = false; // to ensure sweep before committing nextTab
+		// i指当前处理的槽位序号，bound指需要处理的槽位边界
         for (int i = 0, bound = 0;;) {
             Node<K,V> f; int fh;
             // 确定遍历中的索引 i
@@ -2505,8 +2506,10 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                         Node<K,V> ln, hn;
                         if (fh >= 0) {
                         	// 处理当前节点为链表的头结点的情况，构造两个链表，一个是原链表  另一个是原链表的反序排列
+							// fh 的 n+1 位 是0还是1
                             int runBit = fh & n;
                             Node<K,V> lastRun = f;
+                            // 通过遍历链表，记录runBit和lastRun
                             for (Node<K,V> p = f.next; p != null; p = p.next) {
                                 int b = p.hash & n;
                                 if (b != runBit) {
@@ -2522,6 +2525,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                                 hn = lastRun;
                                 ln = null;
                             }
+                            // 重新遍历链表，以lastRun节点为终止条件，根据第X位的值分别构造ln链表和hn链表
                             for (Node<K,V> p = f; p != lastRun; p = p.next) {
                                 int ph = p.hash; K pk = p.key; V pv = p.val;
                                 if ((ph & n) == 0)
